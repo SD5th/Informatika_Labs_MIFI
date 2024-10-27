@@ -15,4 +15,6 @@ int main() {
   *object = 2;
   cout << arr[2];
   arr[0] = -1;
+
+  ShrdPtr<int> empty_object2;
 }

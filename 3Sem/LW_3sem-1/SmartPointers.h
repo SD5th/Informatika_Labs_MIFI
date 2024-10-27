@@ -93,7 +93,7 @@ class ShrdPtr
 {
 private:
 	T* const ptr;
-	int const * referenceCount;
+	int * const referenceCount;
 	bool const isArray;
 public:
   // ptr to empty object
@@ -155,13 +155,13 @@ ShrdPtr<T>::ShrdPtr(ShrdPtr const & shrdPtr):
   referenceCount(shrdPtr.referenceCount),
   isArray(shrdPtr.isArray) 
 {
-  *referenceCount = *referenceCount + 1;
+  *referenceCount += 1;
 } 
 
 template <class T>
 ShrdPtr<T>::~ShrdPtr()
 {
-  *referenceCount = *referenceCount + 1;
+  *referenceCount -= 1;
 	if (*referenceCount == 0)
   {
     if (isArray)
