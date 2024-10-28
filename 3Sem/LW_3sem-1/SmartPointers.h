@@ -12,10 +12,10 @@ public:
   // ptr to empty object
 	UnqPtr(); 
   
-  // ptr to given object
+  // ptr to object
 	UnqPtr(T const &); 
 
-  // ptr to static array
+  // ptr to array
   UnqPtr(T* const &, int const &); 
 	
   ~UnqPtr(); 
