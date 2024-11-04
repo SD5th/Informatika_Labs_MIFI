@@ -137,7 +137,7 @@
   { }
 
   template <class T>
-  ShrdPtr<T>::ShrdPtr(T* const & ptr):
+  ShrdPtr<T[]>::ShrdPtr(T* const & ptr):
     ptr(ptr),
     referenceCount(new unsigned int(1))
   { }
