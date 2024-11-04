@@ -129,10 +129,11 @@
   }
 
 /* Constructors */
+  // ShrdPtr with nullptr 
   template <class T>
-  ShrdPtr<T>::ShrdPtr():
+  ShrdPtr<T[]>::ShrdPtr():
     ptr(nullptr),
-    referenceCount(new unsigned int(1))
+    referenceCount(nullptr)
   { }
 
   template <class T>
