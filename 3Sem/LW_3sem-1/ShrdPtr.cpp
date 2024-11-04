@@ -7,8 +7,29 @@
   {
     return ptr;
   }
-
   
+  template <class T>
+  void ShrdPtr<T>::set(T* const & newPtr)
+  {
+    if (referenceCount != nullptr)
+    {
+      if (*referenceCount == 1)
+      {
+        delete ptr;
+      }
+      else
+      {
+        *referenceCount -= 1;
+        referenceCount = new unsigned int(1);
+      }
+    }
+    else
+    {
+      referenceCount = new unsigned int(1);
+    }
+    ptr = newPtr;
+  }
+
 /* Constructors */
   // ShrdPtr with nullptr
   template <class T>
