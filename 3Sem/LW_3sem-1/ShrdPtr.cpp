@@ -154,7 +154,7 @@
 
 /* Destructor */
   template <class T>
-  ShrdPtr<T>::~ShrdPtr()
+  ShrdPtr<T[]>::~ShrdPtr()
   {
     if (--(*referenceCount) == 0)
     {
