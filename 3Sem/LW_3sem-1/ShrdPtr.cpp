@@ -61,6 +61,8 @@
     if (--(*referenceCount) == 0)
     {
       delete ptr;
+      delete referenceCount;
+    }
   }
 
 /* Operators */
