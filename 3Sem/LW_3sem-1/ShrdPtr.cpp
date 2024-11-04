@@ -45,13 +45,6 @@
     referenceCount(new unsigned int(1))
   { }
 
-  // ShrdPtr to copy of given object
-  template <class T>
-  ShrdPtr<T>::ShrdPtr(T const & object):
-    ptr(new T(object)),
-    referenceCount(new unsigned int(1))
-  { }
-
   // share ptr
   template <class T>
   ShrdPtr<T>::ShrdPtr(ShrdPtr const & shrdPtr):

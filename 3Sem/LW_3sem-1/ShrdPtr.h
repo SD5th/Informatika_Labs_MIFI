@@ -21,9 +21,6 @@ public:
   
   // ShrdPtr with given ptr
   ShrdPtr(T* const &); 
-  
-  // ShrdPtr to copy of given object
-	ShrdPtr(T const &); 
 	
   // share ptr
   ShrdPtr(ShrdPtr const &); 
