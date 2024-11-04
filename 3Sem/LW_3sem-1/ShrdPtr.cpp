@@ -80,7 +80,7 @@
   ShrdPtr<T>& ShrdPtr<T>::operator=(ShrdPtr const & other)
   {
     if (this != &other) { 
-      if (--(*ref_count) == 0) {
+      if (--(*referenceCount) == 0) {
         delete ptr;
         delete referenceCount; 
       }
