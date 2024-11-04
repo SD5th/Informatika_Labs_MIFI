@@ -35,7 +35,7 @@ public:
   // const version of operator * for dereferencing
   T const & operator*() const;
   
-	ShrdPtr<T> operator=(ShrdPtr const &);
+	ShrdPtr<T> & operator=(ShrdPtr const &);
 };
 
 template <class T>
