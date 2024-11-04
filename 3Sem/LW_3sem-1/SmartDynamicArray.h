@@ -52,43 +52,10 @@ template <class T> class DynamicArray
             capacity(0), 
             data(UnqPtr())            
         { }
-
-    //деструктор
-
-        ~DynamicArray()
-        {
-            delete[] data; 
-        }
         
     //декомпозиция
 
-        T GetFirst()        //Получить первый элемент
-        {
-            return Get(0);
-        }
-
-        T GetLast()         //Получить последний элемент
-        {
-            return Get(GetSize()-1);
-        }
-
-        T* GetData()
-        {
-            return this->data;
-        }
-
-        T Get(int index)    //Получить элемент по индексу
-        {
-            if (this->GetSize() == 0)
-                throw IndexOutOfRange("Function 'Get': List is empty.");
-            if (index < 0) 
-                throw IndexOutOfRange("Function 'Get': Negative index.");
-            if (index >= this->size) 
-                throw IndexOutOfRange("Function 'Get': Index is greater than size.");
-            return *(this->data + index);
-        }
-
-        DynamicArray<T>* GetSubsequence(int startIndex, int endIndex)
+        DynamicArray<T> GetSubsequence(size_t const & startIndex, size_t const & endIndex) const
         {
             if (startIndex < 0)
                 throw IndexOutOfRange("Function 'GetSubsequence': Negative startIndex.");
@@ -97,67 +64,35 @@ template <class T> class DynamicArray
             if (endIndex >= this->GetSize())
                 throw IndexOutOfRange("Function 'GetSubsequence': endIndex is equal or greater than size.");
             
-            DynamicArray<T>* output = new DynamicArray<T>(endIndex - startIndex + 1);
-            for (int i = startIndex; i <= endIndex; i++)
-            {
-                (*output).Set(i - startIndex, this->Get(i));
-            }
-            return output;
+            return DynamicArray<T>(data.ptr + startIndex, endIndex - startIndex + 1);
         }
 
-        int GetSize()       //Получить size 
+        int GetSize() const       //Получить size 
         {
-            return this->size;
-        }
-
-        int GetCapacity()   //Получить capacity
-        {
-            return this->capacity;
+            return size;
         }
 
     //операции
-
-        void Set(int index, T value)    //Присвоить значение по индексу
-        {
-            if (index < 0) 
-                throw IndexOutOfRange("Function 'Set': Negative index.");
-            if (index >= this->size) 
-                throw IndexOutOfRange("Function 'Set': Index is greater than size.");
-            *(this->data + index) = value;
-        }
-
-        void SetData(T* newdata)
-        {
-            this->data = newdata;
-        }
 
         void Resize(int newSize)        
         {
             if (newSize < 0)
                 throw IndexOutOfRange("Function 'Resize': Negative size.");
-            if ((this->capacity >= newSize) && (newSize >= this->capacity/4))
-            {
+            if (capacity >= newSize && newSize >= this->capacity/4)
                 this->size = newSize;
-            }
             else
             {
-                T* data_temp = new T [newSize * 2];
-                for (int i = 0; i < std::min(this->size, newSize); i++)
-                {
-                    *(data_temp + i) = *(this->data + i);
-                }
-                delete[] this->data;
-                this->size = newSize;
-                this->capacity = newSize*2;
-                this->data = data_temp;
+                size = newSize;
+                capacity = newSize*2;
+                data = UnqPtr(data.ptr, newSize * 2);
             }
         }
 
-        void Insert(int index, T item)
+        void Insert(size_t index, T item)
         {
             if (index < 0) 
                 throw IndexOutOfRange("Function 'InsertAt': Negative index.");
-            if (index > this->size) 
+            if (index > size) 
                 throw IndexOutOfRange("Function 'InsertAt': Index is greater than size.");
             if (this->capacity > this->size)
             {
@@ -210,24 +145,19 @@ template <class T> class DynamicArray
         }
     
     // перегрузка операторов
-        T &operator[] (int index) { 
-        if (this->GetSize() == 0)
-            throw IndexOutOfRange("Operator '[]': Array is empty.");
-        if (index < 0) 
-            throw IndexOutOfRange("Operator '[]': Negative index.");
-        if (index >= this->size) 
-            throw IndexOutOfRange("Operator '[]': Index is greater than size.");
-        return this->data[index];    
-    }
+        T & operator[] (size_t index) { 
+            if (index < 0) 
+                throw IndexOutOfRange("Operator '[]': Negative index.");
+            if (index >= size) 
+                throw IndexOutOfRange("Operator '[]': Index is greater than size.");
+            return data[index];    
+        }
 
-    //вспомогательное
-        void printall()
-        {
-            std::cout << "Size: " << this->GetSize();
-            std::cout << "\nCapacity: " << this->GetCapacity() << " (" << this->GetCapacity() * sizeof(T) << " bytes)";
-            std::cout << "\nData: \n";
-            for (int i = 0; i < this->size; i++)
-                std::cout << this->Get(i) << ' ';
-            std::cout << "\n";
+        T const & operator[] (size_t index) const { 
+            if (index < 0) 
+                throw IndexOutOfRange("Const operator '[]': Negative index.");
+            if (index >= size) 
+                throw IndexOutOfRange("Const operator '[]': Index is greater than size.");
+            return data[index];    
         }
 };
