@@ -10,6 +10,12 @@ private:
 	unsigned int * const referenceCount;
 
 public:
+/* Getters and setters */
+  T* get() const;
+  
+  void set(T* const &);
+
+/* Constructors */
   // ShrdPtr with nullptr
 	ShrdPtr(); 
   
