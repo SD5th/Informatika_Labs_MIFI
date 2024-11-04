@@ -60,12 +60,7 @@
   {
     *referenceCount -= 1;
     if (*referenceCount == 0)
-    {
-      if (isArray)
-        delete ptr;
-      else
-        delete[] ptr;
-    }
+      delete ptr;
   }
 
 /* Operators */
