@@ -165,7 +165,7 @@
 
 /* Operators */
   template <class T>
-  T& ShrdPtr<T>::operator[](size_t const & index) {
+  T& ShrdPtr<T[]>::operator[](size_t const & index) {
     return ptr[index];
   }
 
