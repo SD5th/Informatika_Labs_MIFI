@@ -2,7 +2,13 @@
 
 /* UnqPtr to object */
 /* Getters and setters */
+  template <class T>
+  T* ShrdPtr<T>::get() const
+  {
+    return ptr;
+  }
 
+  
 /* Constructors */
   // ShrdPtr with nullptr
   template <class T>
