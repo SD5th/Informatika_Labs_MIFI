@@ -142,21 +142,7 @@
     referenceCount(new unsigned int(1))
   { }
 
-  template <class T>
-  ShrdPtr<T>::ShrdPtr(T const & object):
-    ptr(new T(object)),
-    referenceCount(new unsigned int(1))
-  { }
 
-  template <class T>
-  ShrdPtr<T>::ShrdPtr(T* const & array, int const & arrSize):
-    ptr(new T[arrSize]),
-    referenceCount(new int(1)),
-    isArray(true)
-  {
-    if (array != nullptr)
-      std::memcpy(ptr, array, arrSize * sizeof(T));
-  }
 
   template <class T>
   ShrdPtr<T>::ShrdPtr(ShrdPtr const & shrdPtr):

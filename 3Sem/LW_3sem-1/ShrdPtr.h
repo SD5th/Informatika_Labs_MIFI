@@ -56,9 +56,6 @@ public:
   
   // ShrdPtr with given ptr
   ShrdPtr(T* const &);
-
-  // ShrdPtr to copy of given array
-  ShrdPtr(T* const &, size_t const &); 
 	
   // share ptr
   ShrdPtr(ShrdPtr const &); 
