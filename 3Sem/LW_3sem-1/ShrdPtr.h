@@ -28,8 +28,10 @@ public:
   // share ptr
   ShrdPtr(ShrdPtr const &); 
 
+/* Destructor */
   ~ShrdPtr(); 
 
+/* Operators */
   // operator * for dereferencing
   T & operator*();
 
@@ -46,6 +48,9 @@ private:
 	T* const ptr;
 	int * const referenceCount;
 public:
+/* Getters and setters */
+
+/* Constructors */
   // ptr to empty object
 	ShrdPtr(); 
   
@@ -58,8 +63,10 @@ public:
   // share ptr
   ShrdPtr(ShrdPtr const &); 
 
+/* Destructor */
   ~ShrdPtr(); 
-  
+
+/* Operators */  
   // operator [] for access to array element
   T & operator[](size_t const &);
 
