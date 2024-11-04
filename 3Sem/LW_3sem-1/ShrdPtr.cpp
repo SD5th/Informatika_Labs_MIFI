@@ -145,10 +145,9 @@
 
 
   template <class T>
-  ShrdPtr<T>::ShrdPtr(ShrdPtr const & shrdPtr):
+  ShrdPtr<T[]>::ShrdPtr(ShrdPtr const & shrdPtr):
     ptr(shrdPtr.ptr),
-    referenceCount(shrdPtr.referenceCount),
-    isArray(shrdPtr.isArray) 
+    referenceCount(shrdPtr.referenceCount)
   {
     *referenceCount += 1;
   } 
