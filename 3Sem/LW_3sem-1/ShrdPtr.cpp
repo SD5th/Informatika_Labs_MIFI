@@ -75,16 +75,6 @@
   }
 
   template <class T>
-  T& ShrdPtr<T>::operator[](size_t const & index) {
-    return ptr[index];
-  }
-
-  template <class T>
-  const T& ShrdPtr<T>::operator[](size_t const & index) const {
-    return ptr[index];
-  }
-
-  template <class T>
   ShrdPtr<T> ShrdPtr<T>::operator=(ShrdPtr const &)
   {
     return ShrdPtr(this);
