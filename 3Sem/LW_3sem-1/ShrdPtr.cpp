@@ -156,13 +156,10 @@
   template <class T>
   ShrdPtr<T>::~ShrdPtr()
   {
-    *referenceCount -= 1;
-    if (*referenceCount == 0)
+    if (--(*referenceCount) == 0)
     {
-      if (isArray)
-        delete ptr;
-      else
-        delete[] ptr;
+      delete[] ptr;
+      delete referenceCount;
     }
   }
 
