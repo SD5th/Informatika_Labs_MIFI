@@ -100,6 +100,33 @@
 
 /* UnqPtr to array */
 /* Getters and setters */
+  template <class T>
+  T* ShrdPtr<T[]>::get() const
+  {
+    return ptr;
+  }
+  
+  template <class T>
+  void ShrdPtr<T[]>::set(T* const & newPtr)
+  {
+    if (referenceCount != nullptr)
+    {
+      if (*referenceCount == 1)
+      {
+        delete[] ptr;
+      }
+      else
+      {
+        *referenceCount -= 1;
+        referenceCount = new unsigned int(1);
+      }
+    }
+    else
+    {
+      referenceCount = new unsigned int(1);
+    }
+    ptr = newPtr;
+  }
 
 /* Constructors */
   template <class T>
