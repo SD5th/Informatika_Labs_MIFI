@@ -165,16 +165,6 @@
 
 /* Operators */
   template <class T>
-  T& ShrdPtr<T>::operator*() {
-    return *ptr;
-  }
-
-  template <class T>
-  const T& ShrdPtr<T>::operator*() const {
-    return *ptr;
-  }
-
-  template <class T>
   T& ShrdPtr<T>::operator[](size_t const & index) {
     return ptr[index];
   }
