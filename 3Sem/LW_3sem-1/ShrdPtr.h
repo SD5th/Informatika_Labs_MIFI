@@ -70,5 +70,5 @@ public:
   // const version of operator [] for access to array element
   T const & operator[](size_t const &) const;
 
-	ShrdPtr<T> operator=(ShrdPtr const &);
+	ShrdPtr<T> & operator=(ShrdPtr const &);
 };

@@ -175,7 +175,16 @@
   }
 
   template <class T>
-  ShrdPtr<T> ShrdPtr<T>::operator=(ShrdPtr const &)
+  ShrdPtr<T> & ShrdPtr<T[]>::operator=(ShrdPtr const & other)
   {
-    return ShrdPtr(this);
+    if (this != &other) { 
+      if (--(*referenceCount) == 0) {
+        delete[] ptr;
+        delete referenceCount; 
+      }
+      ptr = other.ptr;
+      referenceCount = other.referenceCount;
+      (*referenceCount)++;
+    }
+    return *this;
   }
