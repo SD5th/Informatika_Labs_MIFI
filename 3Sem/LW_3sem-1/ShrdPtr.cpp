@@ -170,7 +170,7 @@
   }
 
   template <class T>
-  const T& ShrdPtr<T>::operator[](size_t const & index) const {
+  T const & ShrdPtr<T[]>::operator[](size_t const & index) const {
     return ptr[index];
   }
 
