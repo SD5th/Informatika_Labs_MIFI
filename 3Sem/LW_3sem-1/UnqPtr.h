@@ -8,6 +8,13 @@ class UnqPtr
 private:
 	T* ptr;
 public:
+/* Getters and setters */
+  // Get ptr
+  T* get() const;
+
+  // Set ptr
+  void set(T* const &);
+
   // UnqPtr with nullptr
 	UnqPtr(); 
   
