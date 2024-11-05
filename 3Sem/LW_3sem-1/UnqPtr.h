@@ -21,9 +21,6 @@ public:
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
-  // UnqPtr to copy of given object
-	UnqPtr(T const &); 
-	
   ~UnqPtr(); 
 
   // operator * for dereferencing
