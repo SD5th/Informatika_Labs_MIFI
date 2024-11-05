@@ -11,8 +11,10 @@ private:
 
 public:
 /* Getters and setters */
+  // Get ptr
   T* get() const;
-  
+
+  // Set ptr
   void set(T* const &);
 
 /* Constructors */
@@ -22,19 +24,20 @@ public:
   // ShrdPtr with given ptr
   ShrdPtr(T* const &); 
 	
-  // share ptr
+  // ShrdPtr that shares ptr with another ShrdPtr
   ShrdPtr(ShrdPtr const &); 
 
 /* Destructor */
   ~ShrdPtr(); 
 
 /* Operators */
-  // operator * for dereferencing
+  // Operator * for dereferencing
   T & operator*();
 
-  // const version of operator * for dereferencing
+  // Const version of operator * for dereferencing
   T const & operator*() const;
   
+  // Operator = for direct assignment
 	ShrdPtr<T> & operator=(ShrdPtr const &);
 };
 
@@ -46,29 +49,32 @@ private:
 	int * const referenceCount;
 public:
 /* Getters and setters */
+  // Get ptr
   T* get() const;
   
+  // Set ptr
   void set(T* const &);
   
 /* Constructors */
-  // ptr to empty object
+  // ShrdPtr with nullptr 
 	ShrdPtr(); 
   
   // ShrdPtr with given ptr
   ShrdPtr(T* const &);
 	
-  // share ptr
+  // ShrdPtr that shares ptr with another ShrdPtr
   ShrdPtr(ShrdPtr const &); 
 
 /* Destructor */
   ~ShrdPtr(); 
 
 /* Operators */  
-  // operator [] for access to array element
+  // Operator [] for dereferencing by index
   T & operator[](size_t const &);
 
-  // const version of operator [] for access to array element
+  // Const vetsion of operator [] for dereferencing by index
   T const & operator[](size_t const &) const;
 
+  // Operator = for direct assignment
 	ShrdPtr<T> & operator=(ShrdPtr const &);
 };
