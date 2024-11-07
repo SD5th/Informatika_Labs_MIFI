@@ -1,6 +1,22 @@
 #include "UnqPtr.h"
 
 
+/* Getters and setters */
+  // Get ptr
+  template <class T>
+  T* UnqPtr<T>::get() const
+  {
+    return ptr;
+  }
+  // Set ptr
+  template <class T>
+  void UnqPtr<T>::set(T* const & newPtr)
+  {
+    if (ptr != nullptr)
+        delete ptr;
+    ptr = newPtr;
+  }
+
 template <class T>
 UnqPtr<T>::UnqPtr():
 	ptr(nullptr)
