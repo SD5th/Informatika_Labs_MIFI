@@ -15,22 +15,28 @@ public:
   // Set ptr
   void set(T* const &);
 
+/* Constructors */
   // UnqPtr with nullptr
 	UnqPtr(); 
   
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
+/* Destructor */
   ~UnqPtr(); 
 
+/* Operators */
   // operator * for dereferencing
   T & operator*();
 
   // const version of operator * for dereferencing
   T const & operator*() const;
-  
+
+/* Deleted semantics */
+  // No copy-constructor
  	UnqPtr(UnqPtr const &) = delete; 
 	
+  // No assignment
   UnqPtr operator=(UnqPtr const &) = delete;
 };
 
@@ -48,21 +54,27 @@ public:
   // Set ptr
   void set(T* const &);
 
+/* Constructors */
   // UnqPtr with nullptr
 	UnqPtr(); 
 
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
+/* Destructor */
   ~UnqPtr(); 
 
-  // operator [] for access to array element
+/* Operators */
+  // Operator [] for dereferencing by index
   T & operator[](size_t const &);
 
-  // const version of operator [] for access to array element
+  // Const version of operator [] for dereferencing by index
   T const & operator[](size_t const &) const;
 
+/* Deleted semantics */
+  // No copy-constructor
  	UnqPtr(UnqPtr const &) = delete;
 
+  // No assignment
 	UnqPtr operator=(UnqPtr const &) = delete;
 };
