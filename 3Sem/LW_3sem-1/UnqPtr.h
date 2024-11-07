@@ -29,10 +29,6 @@ public:
   // const version of operator * for dereferencing
   T const & operator*() const;
   
-  T* operator=(UnqPtr const &);
-
-  T* const operator=(UnqPtr const &) const;
-
  	UnqPtr(UnqPtr const &) = delete; 
 	
   UnqPtr operator=(UnqPtr const &) = delete;
@@ -62,6 +58,7 @@ public:
   // const version of operator [] for access to array element
   T const & operator[](size_t const &) const;
 
- 	UnqPtr(UnqPtr const &) = delete; 
+ 	UnqPtr(UnqPtr const &) = delete;
+
 	UnqPtr operator=(UnqPtr const &) = delete;
 };
