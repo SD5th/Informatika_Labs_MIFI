@@ -12,11 +12,6 @@ UnqPtr<T>::UnqPtr(T* const & ptr):
 { }
 
 template <class T>
-UnqPtr<T>::UnqPtr(T const & object):
-	ptr(new T(object)),
-{ }
-
-template <class T>
 UnqPtr<T>::~UnqPtr()
 {
 	delete ptr;
