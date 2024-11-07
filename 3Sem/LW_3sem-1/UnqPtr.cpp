@@ -70,14 +70,6 @@ UnqPtr<T[]>::UnqPtr(T* const & ptr):
 
 
 template <class T>
-UnqPtr<T[]>::UnqPtr(T* const & array, size_t const & arrSize):
-	ptr(new T[arrSize])
-{
-  if (array != nullptr)
-    std::memcpy(ptr, array, arrSize * sizeof(T));
-}
-
-template <class T>
 UnqPtr<T[]>::~UnqPtr()
 {
 	delete[] ptr;

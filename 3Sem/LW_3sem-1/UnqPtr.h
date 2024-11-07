@@ -54,9 +54,6 @@ public:
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
-  // UnqPtr to copy of given array
-  UnqPtr(T* const &, size_t const &); 
-	
   ~UnqPtr(); 
 
   // operator [] for access to array element
