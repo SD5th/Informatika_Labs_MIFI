@@ -54,7 +54,7 @@ const T& UnqPtr<T>::operator*() const {
   void UnqPtr<T[]>::set(T* const & newPtr)
   {
     if (ptr != nullptr)
-        delete ptr;
+        delete[] ptr;
     ptr = newPtr;
   }
 
