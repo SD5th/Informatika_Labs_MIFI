@@ -7,6 +7,7 @@ class UnqPtr
 {
 private:
 	T* ptr;
+  
 public:
 /* Getters and setters */
   // Get ptr

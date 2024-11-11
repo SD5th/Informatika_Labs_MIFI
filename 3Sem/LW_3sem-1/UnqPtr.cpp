@@ -8,6 +8,7 @@
   {
     return ptr;
   }
+  
   // Set ptr
   template <class T>
   void UnqPtr<T>::set(T* const & newPtr)
