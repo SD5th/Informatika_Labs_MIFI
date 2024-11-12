@@ -139,10 +139,12 @@ public:
   template <class T>
   ShrdPtr<T>::~ShrdPtr()
   {
-    if (--(*referenceCount) == 0)
-    {
-      delete ptr;
-      delete referenceCount;
+    if (referenceCount != nullptr){
+      if (--(*referenceCount) == 0)
+      {
+        delete ptr;
+        delete referenceCount;
+      }
     }
   }
 
@@ -237,10 +239,12 @@ public:
   template <class T>
   ShrdPtr<T[]>::~ShrdPtr()
   {
-    if (--(*referenceCount) == 0)
-    {
-      delete[] ptr;
-      delete referenceCount;
+    if (referenceCount != nullptr){
+      if (--(*referenceCount) == 0)
+      {
+        delete[] ptr;
+        delete referenceCount;
+      }
     }
   }
 
