@@ -2,6 +2,6 @@
 
 using namespace std;
 
-void main() {
+int main() {
   cout << "Main File is working!" << endl;
 }
