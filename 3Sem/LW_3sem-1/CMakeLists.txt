@@ -10,4 +10,4 @@ add_subdirectory(Tests)
 
 add_executable(Main Main.cpp)
 
-target_link_libraries(Main TwoClasses)
+target_link_libraries(Main SmartPointers)
