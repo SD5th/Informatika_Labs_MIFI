@@ -17,6 +17,9 @@ public:
   // Set ptr
   void set(T* const &);
 
+  // Get reference count
+  unsigned int getReferenceCount() const;
+
 /* Constructors */
   // ShrdPtr with nullptr
 	ShrdPtr(); 
@@ -55,6 +58,9 @@ public:
   // Set ptr
   void set(T* const &);
   
+  // Get reference count
+  unsigned int getReferenceCount() const;
+
 /* Constructors */
   // ShrdPtr with nullptr 
 	ShrdPtr(); 
@@ -109,6 +115,13 @@ public:
       referenceCount = new unsigned int(1);
     }
     ptr = newPtr;
+  }
+
+  // Get reference count
+  template <class T>
+  unsigned int ShrdPtr<T>::getReferenceCount() const
+  {
+    return referenceCount;
   }
 
 /* Constructors */
@@ -209,6 +222,13 @@ public:
       referenceCount = new unsigned int(1);
     }
     ptr = newPtr;
+  }
+
+  // Get reference count
+  template <class T>
+  unsigned int ShrdPtr<T[]>::getReferenceCount() const
+  {
+    return referenceCount;
   }
 
 /* Constructors */
