@@ -81,9 +81,6 @@ public:
 };
 
 
-
-#include "UnqPtr.h"
-
 /* UnqPtr to object */
 /* Getters and setters */
   // Get ptr
