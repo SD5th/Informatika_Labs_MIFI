@@ -49,7 +49,7 @@ class ShrdPtr<T[]>
 {
 private:
 	T* const ptr;
-	int * referenceCount;
+	unsigned int * referenceCount;
 public:
 /* Getters and setters */
   // Get ptr
