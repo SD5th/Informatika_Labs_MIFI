@@ -7,7 +7,7 @@ class ShrdPtr
 {
 private:
 	T* ptr;
-	unsigned int * const referenceCount;
+	unsigned int * referenceCount;
 
 public:
 /* Getters and setters */
