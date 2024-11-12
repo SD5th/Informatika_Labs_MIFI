@@ -121,7 +121,7 @@ public:
   template <class T>
   unsigned int ShrdPtr<T>::getReferenceCount() const
   {
-    return referenceCount;
+    return *referenceCount;
   }
 
 /* Constructors */
@@ -228,7 +228,7 @@ public:
   template <class T>
   unsigned int ShrdPtr<T[]>::getReferenceCount() const
   {
-    return referenceCount;
+    return *referenceCount;
   }
 
 /* Constructors */
