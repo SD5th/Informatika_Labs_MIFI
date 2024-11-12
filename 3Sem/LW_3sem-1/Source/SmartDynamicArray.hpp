@@ -1,7 +1,6 @@
 #pragma once
 
 #include <exception>
-#include "SmartPointers.h"
 
 class IndexOutOfRange : public std::exception
 {
