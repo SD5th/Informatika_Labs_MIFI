@@ -98,23 +98,9 @@ public:
   template <class T>
   void ShrdPtr<T>::set(T* const & newPtr)
   {
-    if (referenceCount != nullptr)
-    {
-      if (*referenceCount == 1)
-      {
-        delete ptr;
-      }
-      else
-      {
-        *referenceCount -= 1;
-        referenceCount = new unsigned int(1);
-      }
-    }
-    else
-    {
-      referenceCount = new unsigned int(1);
-    }
+    this->~ShrdPtr();
     ptr = newPtr;
+    referenceCount = new unsigned int(1);
   }
 
   // Get reference count
@@ -205,23 +191,9 @@ public:
   template <class T>
   void ShrdPtr<T[]>::set(T* const & newPtr)
   {
-    if (referenceCount != nullptr)
-    {
-      if (*referenceCount == 1)
-      {
-        delete[] ptr;
-      }
-      else
-      {
-        *referenceCount -= 1;
-        referenceCount = new unsigned int(1);
-      }
-    }
-    else
-    {
-      referenceCount = new unsigned int(1);
-    }
+    this->~ShrdPtr();
     ptr = newPtr;
+    referenceCount = new unsigned int(1);
   }
 
   // Get reference count

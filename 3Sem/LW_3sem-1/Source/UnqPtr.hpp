@@ -94,8 +94,7 @@ public:
   template <class T>
   void UnqPtr<T>::set(T* const & newPtr)
   {
-    if (ptr != nullptr)
-        delete ptr;
+    this->~UnqPtr();
     ptr = newPtr;
   }
 
@@ -151,8 +150,7 @@ public:
   template <class T>
   void UnqPtr<T[]>::set(T* const & newPtr)
   {
-    if (ptr != nullptr)
-        delete[] ptr;
+    this->~UnqPtr();
     ptr = newPtr;
   }
 
