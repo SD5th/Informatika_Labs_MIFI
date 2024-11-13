@@ -48,7 +48,7 @@ template <class T>
 class ShrdPtr<T[]>
 {
 private:
-	T* const ptr;
+	T* ptr;
 	unsigned int * referenceCount;
 public:
 /* Getters and setters */
@@ -152,12 +152,15 @@ public:
   template <class T>
   ShrdPtr<T>::~ShrdPtr()
   {
-    if (referenceCount != nullptr){
+    if (referenceCount != nullptr)
+    {
       if (--(*referenceCount) == 0)
       {
         delete ptr;
         delete referenceCount;
       }
+      ptr = nullptr;
+      referenceCount = nullptr;
     }
   }
 
@@ -259,12 +262,15 @@ public:
   template <class T>
   ShrdPtr<T[]>::~ShrdPtr()
   {
-    if (referenceCount != nullptr){
+    if (referenceCount != nullptr)
+    {
       if (--(*referenceCount) == 0)
       {
         delete[] ptr;
         delete referenceCount;
       }
+      ptr = nullptr;
+      referenceCount = nullptr;
     }
   }
 

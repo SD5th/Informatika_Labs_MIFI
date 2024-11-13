@@ -116,7 +116,11 @@ public:
 	template <class T>
 	UnqPtr<T>::~UnqPtr()
 	{
-		delete ptr;
+    if (ptr != nullptr)
+    {
+      delete ptr;
+      ptr = nullptr;
+    }
 	}
 
 /* Operators */
@@ -169,8 +173,12 @@ public:
 	template <class T>
 	UnqPtr<T[]>::~UnqPtr()
 	{
-		delete[] ptr;
-	}
+    if (ptr != nullptr)
+    {
+      delete[] ptr;
+      ptr = nullptr;
+    }	
+}
 /* Operators */
   // Operator [] for dereferencing by index
 	template <class T>
