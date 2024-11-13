@@ -17,6 +17,16 @@ TEST_CASE("UnqPtr: Constructors")
     UnqPtr<int> UnqPtr(ptr);
     REQUIRE(UnqPtr.get() == ptr);
   }
+
+  SECTION("Moving constructor")
+  {
+    int* ptr = new int(5); 
+    UnqPtr<int> UnqPtr1(ptr);
+    UnqPtr<int> UnqPtr2(std::move(UnqPtr1));
+
+    REQUIRE(UnqPtr1.get() == nullptr);
+    REQUIRE(UnqPtr2.get() == ptr);
+  }
 }
 
 TEST_CASE("UnqPtr: Operators")
@@ -35,6 +45,15 @@ TEST_CASE("UnqPtr: Operators")
     UnqPtr<int> const UnqPtr(ptr);
     REQUIRE(*UnqPtr == 5);    
   }
+
+  SECTION("Assignment with moving an object")
+  {
+    int* ptr = new int(5); 
+    UnqPtr<int> UnqPtr1(ptr);
+    UnqPtr<int> UnqPtr2 = std::move(UnqPtr1);
+    REQUIRE(UnqPtr1.get() == nullptr);    
+    REQUIRE(UnqPtr2.get() == ptr);    
+  }
 }
 
 
@@ -51,6 +70,16 @@ TEST_CASE("UnqPtr[]: Constructors")
     int* ptr = new int[3]{1, 2, 3}; 
     UnqPtr<int[]> UnqPtr(ptr);
     REQUIRE(UnqPtr.get() == ptr);
+  }
+  
+  SECTION("Moving constructor")
+  {
+    int* ptr = new int[3] {1, 2, 3}; 
+    UnqPtr<int[]> UnqPtr1(ptr);
+    UnqPtr<int[]> UnqPtr2(std::move(UnqPtr1));
+
+    REQUIRE(UnqPtr1.get() == nullptr);
+    REQUIRE(UnqPtr2.get() == ptr);
   }
 }
 
@@ -69,5 +98,14 @@ TEST_CASE("UnqPtr[]: Operators")
     int* ptr = new int[3]{1, 2, 3}; 
     UnqPtr<int[]> const UnqPtr(ptr);
     REQUIRE(UnqPtr[0] == 1);    
+  }
+  
+  SECTION("Assignment with moving an object")
+  {
+    int* ptr = new int[3]{1, 2, 3}; 
+    UnqPtr<int[]> UnqPtr1(ptr);
+    UnqPtr<int[]> UnqPtr2 = std::move(UnqPtr1);
+    REQUIRE(UnqPtr1.get() == nullptr);    
+    REQUIRE(UnqPtr2.get() == ptr);    
   }
 }

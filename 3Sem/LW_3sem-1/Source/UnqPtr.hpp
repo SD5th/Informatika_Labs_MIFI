@@ -23,6 +23,12 @@ public:
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
+  // No copy-constructor
+ 	UnqPtr(UnqPtr const &) = delete; 
+
+  // Move-constructor
+  UnqPtr(UnqPtr &&);
+
 /* Destructor */
   ~UnqPtr(); 
 
@@ -33,12 +39,11 @@ public:
   // const version of operator * for dereferencing
   T const & operator*() const;
 
-/* Deleted semantics */
-  // No copy-constructor
- 	UnqPtr(UnqPtr const &) = delete; 
-	
-  // No assignment
-  UnqPtr operator=(UnqPtr const &) = delete;
+  // No assignment with copying an object
+	UnqPtr operator=(UnqPtr const &) = delete;
+
+  // Assignment with moving an object
+	UnqPtr operator=(UnqPtr &&);
 };
 
 
@@ -62,6 +67,12 @@ public:
   // UnqPtr with given ptr
   UnqPtr(T* const &);
 
+  // No copy-constructor
+ 	UnqPtr(UnqPtr const &) = delete; 
+
+  // Move-constructor
+  UnqPtr(UnqPtr &&);
+
 /* Destructor */
   ~UnqPtr(); 
 
@@ -72,12 +83,11 @@ public:
   // Const version of operator [] for dereferencing by index
   T const & operator[](size_t const &) const;
 
-/* Deleted semantics */
-  // No copy-constructor
- 	UnqPtr(UnqPtr const &) = delete;
-
-  // No assignment
+  // No assignment with copying an object
 	UnqPtr operator=(UnqPtr const &) = delete;
+
+  // Assignment with moving an object
+	UnqPtr operator=(UnqPtr &&);
 };
 
 
@@ -110,6 +120,14 @@ public:
 	UnqPtr<T>::UnqPtr(T* const & ptr):
 		ptr(ptr)
 	{ }
+	
+  // Move-constructor	
+  template <class T>
+	UnqPtr<T>::UnqPtr(UnqPtr && other):
+		ptr(std::move(other.ptr))
+	{ 
+    other.ptr = nullptr;
+  }
 
 /* Destructor */
 	template <class T>
@@ -134,6 +152,18 @@ public:
 	const T& UnqPtr<T>::operator*() const {
 	return *ptr;
 	}
+
+  // Assignment with moving an object
+	template <class T>
+	UnqPtr<T> UnqPtr<T>::operator=(UnqPtr && other)
+  {
+    if (this != &other) 
+    {
+      ptr = std::move(other.ptr);
+      other.ptr = nullptr;
+    }
+    return *this;
+  }
 
 
 
@@ -167,6 +197,14 @@ public:
 		ptr(ptr)
 	{ }
 
+  // Move-constructor	
+  template <class T>
+	UnqPtr<T[]>::UnqPtr(UnqPtr && other):
+		ptr(std::move(other.ptr))
+	{ 
+    other.ptr = nullptr;
+  }
+
 /* Destructor */
 	template <class T>
 	UnqPtr<T[]>::~UnqPtr()
@@ -189,3 +227,15 @@ public:
 	const T& UnqPtr<T[]>::operator[](size_t const & index) const {
 		return ptr[index];
 	}
+
+  // Assignment with moving an object
+	template <class T>
+	UnqPtr<T[]> UnqPtr<T[]>::operator=(UnqPtr && other)
+  {
+    if (this != &other) 
+    {
+      ptr = std::move(other.ptr);
+      other.ptr = nullptr;
+    }
+    return *this;
+  }
