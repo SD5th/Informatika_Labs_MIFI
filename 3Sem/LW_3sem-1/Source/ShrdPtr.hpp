@@ -82,7 +82,7 @@ public:
   T const & operator[](size_t const &) const;
 
   // Operator = for direct assignment
-	ShrdPtr<T> & operator=(ShrdPtr const &);
+	ShrdPtr<T[]> & operator=(ShrdPtr const &);
 };
 
 /* UnqPtr to object */
@@ -182,10 +182,7 @@ public:
   ShrdPtr<T>& ShrdPtr<T>::operator=(ShrdPtr const & other)
   {
     if (this != &other) { 
-      if (--(*referenceCount) == 0) {
-        delete ptr;
-        delete referenceCount; 
-      }
+      this->~ShrdPtr();
       ptr = other.ptr;
       referenceCount = other.referenceCount;
       (*referenceCount)++;
@@ -289,13 +286,10 @@ public:
 
   // Operator = for direct assignment
   template <class T>
-  ShrdPtr<T> & ShrdPtr<T[]>::operator=(ShrdPtr const & other)
+  ShrdPtr<T[]> & ShrdPtr<T[]>::operator=(ShrdPtr const & other)
   {
     if (this != &other) { 
-      if (--(*referenceCount) == 0) {
-        delete[] ptr;
-        delete referenceCount; 
-      }
+      this->~ShrdPtr();
       ptr = other.ptr;
       referenceCount = other.referenceCount;
       (*referenceCount)++;
