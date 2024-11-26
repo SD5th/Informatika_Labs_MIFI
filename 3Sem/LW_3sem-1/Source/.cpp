@@ -1,0 +1,1 @@
+// File to help CMake identify library language.
