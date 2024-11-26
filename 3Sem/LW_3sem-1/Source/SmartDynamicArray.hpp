@@ -2,161 +2,181 @@
 
 #include <exception>
 
-class IndexOutOfRange : public std::exception
+#include "UnqPtr.hpp"
+
+template <class T>
+class DynamicArray
 {
-    public:
-        IndexOutOfRange(const char* msg) : std::exception(){
-            this->msg = msg;
-        }
-        const char* what() const noexcept override{
-            return msg;
-        }
-    private:
-        const char* msg;
+private:
+  UnqPtr<T[]> data; // Элементы (ссылка на первый)
+  size_t size;      // Количество элементов
+  size_t capacity;  // Количество зарезервированных ячеек памяти
+
+public:
+  // конструкторы
+
+  DynamicArray();
+
+  DynamicArray(size_t const &);
+
+  DynamicArray(T *const &, size_t const &);
+
+  DynamicArray(DynamicArray const &);
+
+  // декомпозиция
+  DynamicArray<T> getSubsequence(size_t const &, size_t const &) const;
+
+  int getSize() const;
+
+  // операции
+  void resize(size_t const &);
+
+  void insert(size_t const &, T const &);
+
+  void append(T const &);
+
+  void prepend(T const &);
+
+  DynamicArray<T> concat(DynamicArray<T> &);
+
+  // перегрузка операторов
+  T &operator[](size_t);
+
+  T const &operator[](size_t) const;
 };
 
-template <class T> class DynamicArray
+template <class T>
+DynamicArray<T>::DynamicArray() : size(0),
+                                  capacity(0),
+                                  data(UnqPtr())
 {
-    private:
-        UnqPtr<T> data;     // Элементы (ссылка на первый)
-        int size;           // Количество элементов
-        int capacity;       // Количество зарезервированных ячеек памяти
-    
-    public:
-    //конструкторы
+}
 
-        DynamicArray(int const & count) :   
-            size(count), 
-            capacity(count*2), 
-            data(UnqPtr(nullptr, capacity)) 
-        { }
+template <class T>
+DynamicArray<T>::DynamicArray(size_t const &size) : size(size),
+                                                    capacity(size * 2),
+                                                    data(UnqPtr(new T[capacity]))
+{
+}
 
-        DynamicArray(T* const & items, int const & count) : 
-            size(count), 
-            capacity(count*2), 
-            data(UnqPtr(items, capacity))
-        { }
+template <class T>
+DynamicArray<T>::DynamicArray(T *const &items, size_t const &size) : size(size),
+                                                                     capacity(size * 2),
+                                                                     data(UnqPtr(new T[capacity]))
+{
+  memcpy(data, items, size * sizeof(T));
+}
 
-        DynamicArray(DynamicArray const & dynamicArray) : 
-            size(dynamicArray.size), 
-            capacity(dynamicArray.capacity), 
-            data(UnqPtr(nullptr, capacity))
-        {
-            for (int i = 0; i < size; i++)
-                data[i] = dynamicArray.data[i];
-        }
+template <class T>
+DynamicArray<T>::DynamicArray(DynamicArray const &dynamicArray) : size(dynamicArray.size),
+                                                                  capacity(dynamicArray.capacity),
+                                                                  data(UnqPtr(new T[capacity]))
+{
+  memcpy(data, dynamicArray.data, size * sizeof(T));
+}
 
-        DynamicArray(): 
-            size(0), 
-            capacity(0), 
-            data(UnqPtr())            
-        { }
-        
-    //декомпозиция
+template <class T>
+DynamicArray<T> DynamicArray<T>::getSubsequence(size_t const &startIndex, size_t const &endIndex) const
+{
+  if (startIndex < 0)
+    throw std::exception("Function 'GetSubsequence': Negative startIndex.");
+  if (startIndex > endIndex)
+    throw std::exception("Function 'GetSubsequence': startIndex is greater than endIndex.");
+  if (endIndex >= this->GetSize())
+    throw std::exception("Function 'GetSubsequence': endIndex is equal or greater than size.");
 
-        DynamicArray<T> GetSubsequence(size_t const & startIndex, size_t const & endIndex) const
-        {
-            if (startIndex < 0)
-                throw IndexOutOfRange("Function 'GetSubsequence': Negative startIndex.");
-            if (startIndex > endIndex)
-                throw IndexOutOfRange("Function 'GetSubsequence': startIndex is greater than endIndex.");
-            if (endIndex >= this->GetSize())
-                throw IndexOutOfRange("Function 'GetSubsequence': endIndex is equal or greater than size.");
-            
-            return DynamicArray<T>(data.ptr + startIndex, endIndex - startIndex + 1);
-        }
+  return DynamicArray<T>(data.ptr + startIndex, endIndex - startIndex + 1);
+}
+template <class T>
+int DynamicArray<T>::getSize() const // Получить size
+{
+  return size;
+}
 
-        int GetSize() const       //Получить size 
-        {
-            return size;
-        }
+template <class T>
+void DynamicArray<T>::resize(size_t const &newSize)
+{
+  if (newSize < 0)
+    throw std::exception("Function 'Resize': Negative size.");
+  if (capacity >= newSize && newSize >= this->capacity / 4)
+    this->size = newSize;
+  else
+  {
+    size = newSize;
+    capacity = newSize * 2;
+    T *newPtr = new T[capacity];
+    memcpy(newPtr, data.get(), size * sizeof(T));
+    data = UnqPtr(newPtr);
+  }
+}
 
-    //операции
+template <class T>
+void DynamicArray<T>::insert(size_t const &index, T const &item)
+{
+  if (index < 0)
+    throw IndexOutOfRange("Function 'InsertAt': Negative index.");
+  if (index > size)
+    throw IndexOutOfRange("Function 'InsertAt': Index is greater than size.");
+  if (size == capacity)
+  {
+    size += 1;
+    capacity = 2 * size;
+    T *ptr = new T[capacity];
+    memcpy(ptr, data.get(), index * sizeof(T));
+    ptr[index] = item;
+    memcpy(ptr + index + 1, data.get() + index, (size - index - 1) * sizeof(T));
+    data = UnqPtr(ptr);
+  }
+  else
+  {
+    size += 1;
+    for (size_t i = size - 1; i > index; i -= 1)
+      data[i] = data[i - 1];
+    data[index] = item;
+  }
+}
 
-        void Resize(int newSize)        
-        {
-            if (newSize < 0)
-                throw IndexOutOfRange("Function 'Resize': Negative size.");
-            if (capacity >= newSize && newSize >= this->capacity/4)
-                this->size = newSize;
-            else
-            {
-                size = newSize;
-                capacity = newSize*2;
-                data = UnqPtr(data.ptr, newSize * 2);
-            }
-        }
+template <class T>
+void DynamicArray<T>::append(T const &item)
+{
+  insert(size, item);
+}
 
-        void Insert(size_t index, T item)
-        {
-            if (index < 0) 
-                throw IndexOutOfRange("Function 'InsertAt': Negative index.");
-            if (index > size) 
-                throw IndexOutOfRange("Function 'InsertAt': Index is greater than size.");
-            if (this->capacity > this->size)
-            {
-                T temp;
-                this->size += 1;
-                for (int i = this->size - 1; i > index; i -= 1)
-                {
-                    *(data + i) = *(data + i - 1);
-                }
-                *(data + index) = item;
-            }
-            else
-            {
-                this->size += 1;
-                this->capacity = 2 * this->size;
-                T* data_temp = new T [this->capacity];
-                for (int i = 0; i < index; i++)
-                {
-                    *(data_temp + i) = *(this->data + i);
-                }
-                *(data_temp + index) = item;
-                for (int i = index + 1; i < this->size; i++)
-                {
-                    *(data_temp + i) = *(this->data + i - 1);
-                }
-                delete[] this->data;
-                this->data = data_temp;                
-            }   
-        }
+template <class T>
+void DynamicArray<T>::prepend(T const &item)
+{
+  insert(0, item);
+}
 
-        void Append(T item)
-        {
-            this->Insert(this->size, item);
-        }
+template <class T>
+DynamicArray<T> DynamicArray<T>::concat(DynamicArray<T> &array)
+{
+  DynamicArray<T> *output = new DynamicArray<T>(*this);
+  (*output).Resize(this->GetSize() + array.GetSize());
+  for (int i = this->GetSize(); i < output->GetSize(); i++)
+  {
+    (*output).Set(i, array.Get(i - this->GetSize()));
+  }
+  return *output;
+}
 
-        void Prepend(T item)
-        {
-            this->Insert(0, item);
-        }
+// перегрузка операторов
+template <class T>
+T &DynamicArray<T>::operator[](size_t index)
+{
+  if (index < 0)
+    throw IndexOutOfRange("Operator '[]': Negative index.");
+  if (index >= size)
+    throw IndexOutOfRange("Operator '[]': Index is greater than size.");
+  return data[index];
+}
 
-        DynamicArray<T>* Concat(DynamicArray<T> & array)
-        {
-            DynamicArray<T> * output = new DynamicArray<T>(*this);
-            (*output).Resize(this->GetSize() + array.GetSize());
-            for (int i = this->GetSize(); i < output->GetSize(); i++)
-            {
-                (*output).Set(i, array.Get(i-this->GetSize()));
-            }
-            return output; 
-        }
-    
-    // перегрузка операторов
-        T & operator[] (size_t index) { 
-            if (index < 0) 
-                throw IndexOutOfRange("Operator '[]': Negative index.");
-            if (index >= size) 
-                throw IndexOutOfRange("Operator '[]': Index is greater than size.");
-            return data[index];    
-        }
-
-        T const & operator[] (size_t index) const { 
-            if (index < 0) 
-                throw IndexOutOfRange("Const operator '[]': Negative index.");
-            if (index >= size) 
-                throw IndexOutOfRange("Const operator '[]': Index is greater than size.");
-            return data[index];    
-        }
-};
+template <class T>
+T const &DynamicArray<T>::operator[](size_t index) const
+{
+  if (index < 0)
+    throw IndexOutOfRange("Const operator '[]': Negative index.");
+  if (index >= size)
+    throw IndexOutOfRange("Const operator '[]': Index is greater than size.");
+  return data[index];
+}
