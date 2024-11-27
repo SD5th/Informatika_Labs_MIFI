@@ -23,6 +23,9 @@ public:
 
   DynamicArray(DynamicArray const &);
 
+  // Move-constructor
+  DynamicArray(DynamicArray &&);
+
   // декомпозиция
   DynamicArray<T> getSubsequence(size_t const &, size_t const &) const;
 
@@ -75,6 +78,12 @@ DynamicArray<T>::DynamicArray(DynamicArray const &dynamicArray) : size(dynamicAr
   memcpy(data, dynamicArray.data, size * sizeof(T));
 }
 
+  // Move-constructor	
+  template <class T>
+	DynamicArray<T>::DynamicArray(DynamicArray && other):
+		data(std::move(other.data))
+	{ }
+
 template <class T>
 DynamicArray<T> DynamicArray<T>::getSubsequence(size_t const &startIndex, size_t const &endIndex) const
 {
@@ -87,6 +96,7 @@ DynamicArray<T> DynamicArray<T>::getSubsequence(size_t const &startIndex, size_t
 
   return DynamicArray<T>(data.ptr + startIndex, endIndex - startIndex + 1);
 }
+
 template <class T>
 int DynamicArray<T>::getSize() const // Получить size
 {
