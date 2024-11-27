@@ -126,7 +126,7 @@ void DynamicArray<T>::insert(size_t const &index, T const &item)
   if (index < 0)
     throw IndexOutOfRange("Function 'InsertAt': Negative index.");
   if (index > size)
-    throw IndexOutOfRange("Function 'InsertAt': Index is greater than size.");
+    throw std::exception("Function 'InsertAt': Index is greater than size.");
   if (size == capacity)
   {
     size += 1;
@@ -175,9 +175,9 @@ template <class T>
 T &DynamicArray<T>::operator[](size_t index)
 {
   if (index < 0)
-    throw IndexOutOfRange("Operator '[]': Negative index.");
+    throw std::exception("Operator '[]': Negative index.");
   if (index >= size)
-    throw IndexOutOfRange("Operator '[]': Index is greater than size.");
+    throw std::exception("Operator '[]': Index is greater than size.");
   return data[index];
 }
 
@@ -185,8 +185,8 @@ template <class T>
 T const &DynamicArray<T>::operator[](size_t index) const
 {
   if (index < 0)
-    throw IndexOutOfRange("Const operator '[]': Negative index.");
+    throw std::exception("Const operator '[]': Negative index.");
   if (index >= size)
-    throw IndexOutOfRange("Const operator '[]': Index is greater than size.");
+    throw std::exception("Const operator '[]': Index is greater than size.");
   return data[index];
 }
