@@ -159,15 +159,14 @@ void DynamicArray<T>::prepend(T const &item)
 }
 
 template <class T>
-DynamicArray<T> DynamicArray<T>::concat(DynamicArray<T> &array)
+void DynamicArray<T>::concat(DynamicArray<T> const & other)
 {
-  DynamicArray<T> *output = new DynamicArray<T>(*this);
-  (*output).Resize(this->GetSize() + array.GetSize());
-  for (int i = this->GetSize(); i < output->GetSize(); i++)
+  int prevSize = getSize();
+  Resize(getSize() + other.GetSize());
+  for (int i = prevSize; i < getSize(); i++)
   {
-    (*output).Set(i, array.Get(i - this->GetSize()));
+    (*this)[i] = other[i - prevSize];
   }
-  return *output;
 }
 
 // перегрузка операторов
