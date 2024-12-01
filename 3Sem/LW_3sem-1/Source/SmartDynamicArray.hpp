@@ -1,6 +1,6 @@
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 
 #include "UnqPtr.hpp"
 
@@ -8,12 +8,11 @@ template <class T>
 class DynamicArray
 {
 private:
-  UnqPtr<T[]> data; // Элементы (ссылка на первый)
-  size_t size;      // Количество элементов
-  size_t capacity;  // Количество зарезервированных ячеек памяти
+  size_t size;      // Amount of items that Array can contain
+  size_t capacity;  // Maximum size without reallocating
+  UnqPtr<T[]> data; // UnqPtr with items
 
 public:
-
 /* Constructors */
   // Constructor of zero-array
   DynamicArray();
@@ -32,7 +31,7 @@ public:
 
 /* Getters */
   // Get size
-  int getSize() const;
+  size_t getSize() const;
   
   // Get subsequence
   DynamicArray<T> getSubsequence(size_t const &, size_t const &) const;
@@ -67,7 +66,7 @@ public:
   DynamicArray<T>::DynamicArray() : 
     size(0),
     capacity(0),
-    data(UnqPtr())
+    data(UnqPtr<T[]>())
   { }
 
   // Constructor of empty array of given size
@@ -75,7 +74,7 @@ public:
   DynamicArray<T>::DynamicArray(size_t const &size) : 
     size(size),
     capacity(size * 2),
-    data(UnqPtr(new T[capacity]))
+    data(UnqPtr<T[]>(new T[capacity]))
   { }
 
   // Constructor of array with given objects of given size
@@ -83,9 +82,9 @@ public:
   DynamicArray<T>::DynamicArray(T *const &items, size_t const &size) : 
     size(size),
     capacity(size * 2),
-    data(UnqPtr(new T[capacity]))
+    data(UnqPtr<T[]>(new T[capacity]))
   {
-    memcpy(data, items, size * sizeof(T));
+    memcpy(data.get(), items, size * sizeof(T));
   }
 
   // Copy-constructor
@@ -93,47 +92,47 @@ public:
   DynamicArray<T>::DynamicArray(DynamicArray const &dynamicArray) : 
     size(dynamicArray.size),
     capacity(dynamicArray.capacity),
-    data(UnqPtr(new T[capacity]))
+    data(UnqPtr<T[]>(new T[capacity]))
   {
-    memcpy(data, dynamicArray.data, size * sizeof(T));
+    memcpy(data.get(), dynamicArray.data.get(), size * sizeof(T));
   }
 
   // Move-constructor
   template <class T>
   DynamicArray<T>::DynamicArray(DynamicArray &&other) : 
+    size(other.size),
+    capacity(other.capacity),
     data(std::move(other.data))
-  { }
+  {
+    other.size = 0;
+    other.capacity = 0;
+  }
 
 /* Getters */
   // Get size
   template <class T>
-  int DynamicArray<T>::getSize() const 
+  size_t DynamicArray<T>::getSize() const 
   {
     return size;
   }
-  
+
   // Get subsequence
   template <class T>
-  DynamicArray<T> DynamicArray<T>::getSubsequence(size_t const &startIndex, size_t const &endIndex) const
+  DynamicArray<T> DynamicArray<T>::getSubsequence(size_t const & startIndex, size_t const & endIndex) const
   {
-    if (startIndex < 0)
-      throw std::exception("Function 'GetSubsequence': Negative startIndex.");
     if (startIndex > endIndex)
-      throw std::exception("Function 'GetSubsequence': startIndex is greater than endIndex.");
-    if (endIndex >= this->GetSize())
-      throw std::exception("Function 'GetSubsequence': endIndex is equal or greater than size.");
+      throw std::out_of_range("Function 'GetSubsequence': startIndex is greater than endIndex.");
+    if (endIndex >= getSize())
+      throw std::out_of_range("Function 'GetSubsequence': endIndex is equal or greater than size.");
 
-    return DynamicArray<T>(data.ptr + startIndex, endIndex - startIndex + 1);
+    return DynamicArray<T>(data.get() + startIndex, endIndex - startIndex + 1);
   }
-
 
 /* Modifying Operations */
   // Resize
   template <class T>
   void DynamicArray<T>::resize(size_t const &newSize)
   {
-    if (newSize < 0)
-      throw std::exception("Function 'Resize': Negative size.");
     if (capacity >= newSize && newSize >= this->capacity / 4)
       this->size = newSize;
     else
@@ -142,47 +141,44 @@ public:
       capacity = newSize * 2;
       T *newPtr = new T[capacity];
       memcpy(newPtr, data.get(), size * sizeof(T));
-      data = UnqPtr(newPtr);
+      data = UnqPtr<T[]>(newPtr);
     }
   }
 
   // Insert 
   template <class T>
-  void DynamicArray<T>::insert(size_t const &index, T const &item)
+  void DynamicArray<T>::insert(size_t const & index, T const & item)
   {
-    if (index < 0)
-      throw std::exception("Function 'InsertAt': Negative index.");
     if (index > size)
-      throw std::exception("Function 'InsertAt': Index is greater than size.");
+      throw std::out_of_range("Function 'InsertAt': Index is greater than size.");
     if (size == capacity)
     {
-      size += 1;
-      capacity = 2 * size;
+      capacity = (capacity == 0) ? 1 : 2 * capacity;
       T *ptr = new T[capacity];
       memcpy(ptr, data.get(), index * sizeof(T));
       ptr[index] = item;
       memcpy(ptr + index + 1, data.get() + index, (size - index - 1) * sizeof(T));
-      data = UnqPtr(ptr);
+      data = UnqPtr<T[]>(ptr);
     }
     else
     {
-      size += 1;
-      for (size_t i = size - 1; i > index; i -= 1)
+      for (size_t i = size; i > index; i--)
         data[i] = data[i - 1];
       data[index] = item;
     }
+      size++;
   }
 
   // Append 
   template <class T>
-  void DynamicArray<T>::append(T const &item)
+  void DynamicArray<T>::append(T const & item)
   {
     insert(size, item);
   }
 
   // Prepend 
   template <class T>
-  void DynamicArray<T>::prepend(T const &item)
+  void DynamicArray<T>::prepend(T const & item)
   {
     insert(0, item);
   }
@@ -192,8 +188,8 @@ public:
   void DynamicArray<T>::concat(DynamicArray<T> const & other)
   {
     int prevSize = getSize();
-    Resize(getSize() + other.GetSize());
-    for (int i = prevSize; i < getSize(); i++)
+    resize(getSize() + other.getSize());
+    for (size_t i = prevSize; i < getSize(); i++)
     {
       (*this)[i] = other[i - prevSize];
     }
@@ -204,10 +200,8 @@ public:
   template <class T>
   T &DynamicArray<T>::operator[](size_t index)
   {
-    if (index < 0)
-      throw std::exception("Operator '[]': Negative index.");
     if (index >= size)
-      throw std::exception("Operator '[]': Index is greater than size.");
+      throw std::out_of_range("Operator '[]': Index is greater than size.");
     return data[index];
   }
 
@@ -215,9 +209,7 @@ public:
   template <class T>
   T const &DynamicArray<T>::operator[](size_t index) const
   {
-    if (index < 0)
-      throw std::exception("Const operator '[]': Negative index.");
     if (index >= size)
-      throw std::exception("Const operator '[]': Index is greater than size.");
+      throw std::out_of_range("Const operator '[]': Index is greater than size.");
     return data[index];
   }

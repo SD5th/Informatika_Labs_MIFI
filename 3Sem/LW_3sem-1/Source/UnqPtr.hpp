@@ -43,7 +43,7 @@ public:
 	UnqPtr operator=(UnqPtr const &) = delete;
 
   // Assignment with moving an object
-	UnqPtr operator=(UnqPtr &&);
+	void operator=(UnqPtr &&);
 };
 
 
@@ -87,7 +87,7 @@ public:
 	UnqPtr operator=(UnqPtr const &) = delete;
 
   // Assignment with moving an object
-	UnqPtr operator=(UnqPtr &&);
+	void operator=(UnqPtr &&);
 };
 
 
@@ -155,14 +155,13 @@ public:
 
   // Assignment with moving an object
 	template <class T>
-	UnqPtr<T> UnqPtr<T>::operator=(UnqPtr && other)
+	void UnqPtr<T>::operator=(UnqPtr && other)
   {
     if (this != &other) 
     {
       ptr = std::move(other.ptr);
       other.ptr = nullptr;
     }
-    return *this;
   }
 
 
@@ -230,12 +229,11 @@ public:
 
   // Assignment with moving an object
 	template <class T>
-	UnqPtr<T[]> UnqPtr<T[]>::operator=(UnqPtr && other)
+	void UnqPtr<T[]>::operator=(UnqPtr && other)
   {
     if (this != &other) 
     {
       ptr = std::move(other.ptr);
       other.ptr = nullptr;
     }
-    return *this;
   }
