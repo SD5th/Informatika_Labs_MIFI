@@ -162,13 +162,13 @@ public:
   // Operator * for dereferencing
 	template <class T>
 	T& UnqPtr<T>::operator*() {
-	return *ptr;
+	  return *ptr;
 	}
 
   // Const version of operator * for dereferencing
 	template <class T>
 	const T& UnqPtr<T>::operator*() const {
-	return *ptr;
+	  return *ptr;
 	}
 
   // operator -> for access to class fields

@@ -103,7 +103,7 @@ public:
 	ShrdPtr<T[]> & operator=(ShrdPtr const &);
 };
 
-/* UnqPtr to object */
+/* ShrdPtr to object */
 /* Getters and setters */
   // Get ptr
   template <class T>

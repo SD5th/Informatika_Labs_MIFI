@@ -12,8 +12,6 @@ TEST_CASE("SmartDynamicArray: Constructors")
     REQUIRE(DynArr.getSize() == 0);
   }
 
-  /*
-  */
   SECTION("Constructor of empty array of given size")
   {
     DynamicArray<int> DynArr(5);
