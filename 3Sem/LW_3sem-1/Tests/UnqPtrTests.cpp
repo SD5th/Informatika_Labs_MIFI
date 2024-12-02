@@ -46,6 +46,33 @@ TEST_CASE("UnqPtr: Operators")
     REQUIRE(*UnqPtr == 5);    
   }
 
+  SECTION("Operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+    };
+    test_struct* ptr = new test_struct();
+    UnqPtr<test_struct> UnqPtr(ptr);
+    UnqPtr->value = 5;
+    REQUIRE((*UnqPtr).value == 5);
+    REQUIRE(UnqPtr->value == 5);
+  }
+
+  SECTION("Const version of operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+      test_struct(int value):
+        value(value)
+      { }
+    };
+    test_struct* ptr = new test_struct(5);
+    const UnqPtr<test_struct> UnqPtr(ptr);
+    REQUIRE(UnqPtr->value == 5);
+  }
+
   SECTION("Assignment with moving an object")
   {
     int* ptr = new int(5); 
@@ -85,6 +112,49 @@ TEST_CASE("UnqPtr[]: Constructors")
 
 TEST_CASE("UnqPtr[]: Operators")
 {
+  SECTION("Operator *")
+  {
+    int* ptr = new int[3] {1, 2, 3};
+    UnqPtr<int[]> UnqPtr(ptr);
+    *UnqPtr = 4;
+    REQUIRE(*UnqPtr == 4);
+    REQUIRE(UnqPtr[0] == 4);
+  }
+
+  SECTION("Const version of operator *")
+  {
+    int* ptr = new int[3] {1, 2, 3};
+    const UnqPtr<int[]> UnqPtr(ptr);
+    REQUIRE(*UnqPtr == 1);
+  }
+
+  SECTION("Operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+    };
+    test_struct* ptr = new test_struct[3];
+    UnqPtr<test_struct[]> UnqPtr(ptr);
+    UnqPtr->value = 5;
+    REQUIRE(UnqPtr[0].value == 5);
+    REQUIRE(UnqPtr->value == 5);
+  }
+
+  SECTION("Const version of operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+      test_struct(int value):
+        value(value)
+      { }
+    };
+    test_struct* ptr = new test_struct(5);
+    const UnqPtr<test_struct> UnqPtr(ptr);
+    REQUIRE(UnqPtr->value == 5);
+  }
+
   SECTION("Operator []")
   {
     int* ptr = new int[3]{1, 2, 3};

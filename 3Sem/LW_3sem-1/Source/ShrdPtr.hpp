@@ -39,6 +39,12 @@ public:
 
   // Const version of operator * for dereferencing
   T const & operator*() const;
+
+  // operator -> for access to class fields
+  T* operator->();
+
+  // const verison of operator -> for access to class fields
+  const T* operator->() const;
   
   // Operator = for direct assignment
 	ShrdPtr<T> & operator=(ShrdPtr const &);
@@ -75,6 +81,18 @@ public:
   ~ShrdPtr(); 
 
 /* Operators */  
+  // operator * for dereferencing
+  T & operator*();
+
+  // const version of operator * for dereferencing
+  T const & operator*() const;
+
+  // operator -> for access to class fields
+  T* operator->();
+
+  // const verison of operator -> for access to class fields
+  const T* operator->() const;
+
   // Operator [] for dereferencing by index
   T & operator[](size_t const &);
 
@@ -163,6 +181,18 @@ public:
     return *ptr;
   }
 
+  // operator -> for access to class fields
+  template <class T>
+  T* ShrdPtr<T>::operator->() {
+    return ptr;
+  }
+
+  // const verison of operator -> for access to class fields
+  template <class T>
+  const T* ShrdPtr<T>::operator->() const {
+    return ptr;
+  }
+
   // Operator = for direct assignment
   template <class T>
   ShrdPtr<T>& ShrdPtr<T>::operator=(ShrdPtr const & other)
@@ -244,6 +274,30 @@ public:
   }
 
 /* Operators */
+  // Operator * for dereferencing
+	template <class T>
+	T& ShrdPtr<T[]>::operator*() {
+	  return *ptr;
+	}
+
+  // Const version of operator * for dereferencing
+	template <class T>
+	const T& ShrdPtr<T[]>::operator*() const {
+	  return *ptr;
+	}
+
+  // operator -> for access to class fields
+  template <class T>
+  T* ShrdPtr<T[]>::operator->() {
+    return ptr;
+  }
+
+  // const verison of operator -> for access to class fields
+  template <class T>
+  const T* ShrdPtr<T[]>::operator->() const {
+    return ptr;
+  }
+
   // Operator [] for dereferencing by index
   template <class T>
   T& ShrdPtr<T[]>::operator[](size_t const & index) {

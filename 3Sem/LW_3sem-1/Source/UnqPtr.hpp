@@ -39,6 +39,12 @@ public:
   // const version of operator * for dereferencing
   T const & operator*() const;
 
+  // operator -> for access to class fields
+  T* operator->();
+
+  // const verison of operator -> for access to class fields
+  const T* operator->() const;
+
   // No assignment with copying an object
 	UnqPtr operator=(UnqPtr const &) = delete;
 
@@ -77,6 +83,18 @@ public:
   ~UnqPtr(); 
 
 /* Operators */
+  // operator * for dereferencing
+  T & operator*();
+
+  // const version of operator * for dereferencing
+  T const & operator*() const;
+
+  // operator -> for access to class fields
+  T* operator->();
+
+  // const verison of operator -> for access to class fields
+  const T* operator->() const;
+
   // Operator [] for dereferencing by index
   T & operator[](size_t const &);
 
@@ -153,6 +171,18 @@ public:
 	return *ptr;
 	}
 
+  // operator -> for access to class fields
+  template <class T>
+  T* UnqPtr<T>::operator->() {
+    return ptr;
+  }
+
+  // const verison of operator -> for access to class fields
+  template <class T>
+  const T* UnqPtr<T>::operator->() const {
+    return ptr;
+  }
+
   // Assignment with moving an object
 	template <class T>
 	void UnqPtr<T>::operator=(UnqPtr && other)
@@ -215,6 +245,30 @@ public:
     }	
 }
 /* Operators */
+  // Operator * for dereferencing
+	template <class T>
+	T& UnqPtr<T[]>::operator*() {
+	  return *ptr;
+	}
+
+  // Const version of operator * for dereferencing
+	template <class T>
+	const T& UnqPtr<T[]>::operator*() const {
+	  return *ptr;
+	}
+
+  // operator -> for access to class fields
+  template <class T>
+  T* UnqPtr<T[]>::operator->() {
+    return ptr;
+  }
+
+  // const verison of operator -> for access to class fields
+  template <class T>
+  const T* UnqPtr<T[]>::operator->() const {
+    return ptr;
+  }
+
   // Operator [] for dereferencing by index
 	template <class T>
 	T& UnqPtr<T[]>::operator[](size_t const & index) {

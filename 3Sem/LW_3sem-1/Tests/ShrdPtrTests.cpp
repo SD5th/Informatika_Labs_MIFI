@@ -47,6 +47,34 @@ TEST_CASE("ShrdPtr: Operators")
     REQUIRE(*ShrdPtr == 5);    
   }
 
+  SECTION("Operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+    };
+    test_struct* ptr = new test_struct();
+    ShrdPtr<test_struct> ShrdPtr(ptr);
+    ShrdPtr->value = 5;
+    REQUIRE((*ShrdPtr).value == 5);
+    REQUIRE(ShrdPtr->value == 5);
+  }
+
+  SECTION("Const version of operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+      test_struct(int value):
+        value(value)
+      { }
+    };
+    test_struct* ptr = new test_struct(5);
+    const ShrdPtr<test_struct> ShrdPtr(ptr);
+    REQUIRE(ShrdPtr->value == 5);
+  }
+
+
   SECTION("Operator =")
   {
     int* ptr = new int(5); 
@@ -96,6 +124,49 @@ TEST_CASE("ShrdPtr[]: Constructors")
 
 TEST_CASE("ShrdPtr[]: Operators")
 {
+  SECTION("Operator *")
+  {
+    int* ptr = new int[3] {1, 2, 3};
+    ShrdPtr<int[]> ShrdPtr(ptr);
+    *ShrdPtr = 4;
+    REQUIRE(*ShrdPtr == 4);
+    REQUIRE(ShrdPtr[0] == 4);
+  }
+
+  SECTION("Const version of operator *")
+  {
+    int* ptr = new int[3] {1, 2, 3};
+    const ShrdPtr<int[]> ShrdPtr(ptr);
+    REQUIRE(*ShrdPtr == 1);
+  }
+
+  SECTION("Operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+    };
+    test_struct* ptr = new test_struct[3];
+    ShrdPtr<test_struct[]> ShrdPtr(ptr);
+    ShrdPtr->value = 5;
+    REQUIRE(ShrdPtr[0].value == 5);
+    REQUIRE(ShrdPtr->value == 5);
+  }
+
+  SECTION("Const version of operator ->")
+  {
+    struct test_struct
+    {
+      int value;
+      test_struct(int value):
+        value(value)
+      { }
+    };
+    test_struct* ptr = new test_struct(5);
+    const ShrdPtr<test_struct> ShrdPtr(ptr);
+    REQUIRE(ShrdPtr->value == 5);
+  }
+
   SECTION("Operator []")
   {
     int* ptr = new int[3]{1, 2, 3};
