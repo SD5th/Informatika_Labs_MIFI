@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring> // memcpy, size_t
+#include <stdexcept>
 
 template <class T>
 class ShrdPtr
@@ -116,9 +117,20 @@ public:
   template <class T>
   void ShrdPtr<T>::set(T* const & newPtr)
   {
-    this->~ShrdPtr();
+    if (referenceCount != nullptr)
+      {
+        if (--(*referenceCount) == 0)
+        {
+          if (ptr != nullptr)
+            delete ptr;
+          delete referenceCount;
+          ptr = nullptr;
+          referenceCount = nullptr;
+        }
+      }
     ptr = newPtr;
-    referenceCount = new unsigned int(1);
+    if (ptr != nullptr)
+      referenceCount = new unsigned int(1);
   }
 
   // Get reference count
@@ -149,7 +161,8 @@ public:
     ptr(shrdPtr.ptr),
     referenceCount(shrdPtr.referenceCount)
   {
-    *referenceCount += 1;
+    if (referenceCount != nullptr)
+      *referenceCount += 1;
   }
 
 /* Destructor */
@@ -160,7 +173,8 @@ public:
     {
       if (--(*referenceCount) == 0)
       {
-        delete ptr;
+        if (ptr != nullptr)
+          delete ptr;
         delete referenceCount;
       }
       ptr = nullptr;
@@ -184,6 +198,8 @@ public:
   // operator -> for access to class fields
   template <class T>
   T* ShrdPtr<T>::operator->() {
+    if (ptr == nullptr)
+      throw std::logic_error("Operator -> was called with nullptr.");
     return ptr;
   }
 
@@ -198,10 +214,21 @@ public:
   ShrdPtr<T>& ShrdPtr<T>::operator=(ShrdPtr const & other)
   {
     if (this != &other) { 
-      this->~ShrdPtr();
+      if (referenceCount != nullptr)
+      {
+        if (--(*referenceCount) == 0)
+        {
+          if (ptr != nullptr)
+            delete ptr;
+          delete referenceCount;
+          ptr = nullptr;
+          referenceCount = nullptr;
+        }
+      }
       ptr = other.ptr;
       referenceCount = other.referenceCount;
-      (*referenceCount)++;
+      if (referenceCount != nullptr)
+        (*referenceCount)++;
     }
     return *this;
   }
@@ -221,9 +248,20 @@ public:
   template <class T>
   void ShrdPtr<T[]>::set(T* const & newPtr)
   {
-    this->~ShrdPtr();
+    if (referenceCount != nullptr)
+      {
+        if (--(*referenceCount) == 0)
+        {
+          if (ptr != nullptr)
+            delete[] ptr;
+          delete referenceCount;
+          ptr = nullptr;
+          referenceCount = nullptr;
+        }
+      }
     ptr = newPtr;
-    referenceCount = new unsigned int(1);
+    if (ptr != nullptr)
+      referenceCount = new unsigned int(1);
   }
 
   // Get reference count
@@ -254,7 +292,8 @@ public:
     ptr(shrdPtr.ptr),
     referenceCount(shrdPtr.referenceCount)
   {
-    *referenceCount += 1;
+    if (referenceCount != nullptr)
+      *referenceCount += 1;
   } 
 
 /* Destructor */
@@ -265,7 +304,8 @@ public:
     {
       if (--(*referenceCount) == 0)
       {
-        delete[] ptr;
+        if (ptr != nullptr)
+          delete[] ptr;
         delete referenceCount;
       }
       ptr = nullptr;
@@ -289,6 +329,8 @@ public:
   // operator -> for access to class fields
   template <class T>
   T* ShrdPtr<T[]>::operator->() {
+    if (ptr == nullptr)
+      throw std::logic_error("Operator -> was called with nullptr.");
     return ptr;
   }
 
@@ -315,10 +357,21 @@ public:
   ShrdPtr<T[]> & ShrdPtr<T[]>::operator=(ShrdPtr const & other)
   {
     if (this != &other) { 
-      this->~ShrdPtr();
+      if (referenceCount != nullptr)
+      {
+        if (--(*referenceCount) == 0)
+        {
+          if (ptr != nullptr)
+            delete[] ptr;
+          delete referenceCount;
+          ptr = nullptr;
+          referenceCount = nullptr;
+        }
+      }
       ptr = other.ptr;
       referenceCount = other.referenceCount;
-      (*referenceCount)++;
+      if (referenceCount != nullptr)
+        (*referenceCount)++;
     }
     return *this;
   }
