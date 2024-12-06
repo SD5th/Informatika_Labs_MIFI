@@ -5,3 +5,4 @@
 #include "ShrdPtrTests.cpp"
 #include "UnqPtrTests.cpp"
 #include "DynamicArrayTests.cpp"
+#include "LinkedListTests.cpp"
