@@ -124,8 +124,8 @@ public:
       throw std::out_of_range("Function 'GetSubsequence': startIndex is greater than endIndex.");
     if (endIndex >= getSize())
       throw std::out_of_range("Function 'GetSubsequence': endIndex is equal or greater than size.");
-
-    return DynamicArray<T>(data.get() + startIndex, endIndex - startIndex + 1);
+    DynamicArray<T> result(data.get() + startIndex, endIndex - startIndex + 1);
+    return std::move(result);
   }
 
 /* Modifying Operations */
