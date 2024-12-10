@@ -5,4 +5,5 @@ add_library(SmartPointers
             UnqPtr.hpp 
             ShrdPtr.hpp 
             SmartDynamicArray.hpp
+            SmartLinkedList.hpp
             .cpp)
