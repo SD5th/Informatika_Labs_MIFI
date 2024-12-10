@@ -131,6 +131,8 @@ public:
     ptr = newPtr;
     if (ptr != nullptr)
       referenceCount = new unsigned int(1);
+    else 
+      referenceCount = nullptr;
   }
 
   // Get reference count
@@ -262,6 +264,8 @@ public:
     ptr = newPtr;
     if (ptr != nullptr)
       referenceCount = new unsigned int(1);
+    else
+      referenceCount = nullptr;
   }
 
   // Get reference count

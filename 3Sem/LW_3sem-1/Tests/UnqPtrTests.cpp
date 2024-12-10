@@ -77,7 +77,9 @@ TEST_CASE("UnqPtr: Operators")
   {
     int* ptr = new int(5); 
     UnqPtr<int> UnqPtr1(ptr);
-    UnqPtr<int> UnqPtr2 = std::move(UnqPtr1);
+    UnqPtr<int> UnqPtr2;
+    REQUIRE_NOTHROW(UnqPtr1.operator=(std::move(UnqPtr1)));
+    UnqPtr2 = std::move(UnqPtr1);
     REQUIRE(UnqPtr1.get() == nullptr);    
     REQUIRE(UnqPtr2.get() == ptr);    
   }
@@ -174,7 +176,9 @@ TEST_CASE("UnqPtr[]: Operators")
   {
     int* ptr = new int[3]{1, 2, 3}; 
     UnqPtr<int[]> UnqPtr1(ptr);
-    UnqPtr<int[]> UnqPtr2 = std::move(UnqPtr1);
+    UnqPtr<int[]> UnqPtr2;
+    REQUIRE_NOTHROW(UnqPtr1.operator=(std::move(UnqPtr1)));
+    UnqPtr2 = std::move(UnqPtr1);
     REQUIRE(UnqPtr1.get() == nullptr);    
     REQUIRE(UnqPtr2.get() == ptr);    
   }

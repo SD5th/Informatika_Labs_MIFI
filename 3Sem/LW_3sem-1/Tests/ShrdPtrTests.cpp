@@ -2,6 +2,17 @@
 
 #include <catch2/catch_all.hpp>
 
+TEST_CASE("ShrdPtr: Getters&Setters")
+{
+  ShrdPtr<int> ShrdPtr1;
+  int* ptr = new int(5);
+  ShrdPtr1.set(nullptr);
+  ShrdPtr1.set(ptr);
+  REQUIRE(ShrdPtr1.get() == ptr);
+  ShrdPtr<int> ShrdPtr2(ShrdPtr1);
+  ShrdPtr1.set(nullptr);
+}
+
 TEST_CASE("ShrdPtr: Constructors")
 {
   SECTION("Constructor with nullptr")

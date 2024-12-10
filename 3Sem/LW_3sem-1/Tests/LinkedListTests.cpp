@@ -108,7 +108,6 @@ TEST_CASE("SmartLinkedList: Modifying Operations")
     LinkedList<int> List(arr, 2);
     List.prepend(0);
     List.append(3); 
-    std::cout << List[0] << " " << List[1] << " " << List[2] << " " << List[3] << std::endl; 
     REQUIRE(List[0] == 0);
     REQUIRE(List[1] == 1);
     REQUIRE(List[2] == 2); 

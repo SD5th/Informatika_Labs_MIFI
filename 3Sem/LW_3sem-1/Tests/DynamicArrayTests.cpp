@@ -104,7 +104,6 @@ TEST_CASE("SmartDynamicArray: Modifying Operations")
     DynamicArray<int> DynArr(arr, 2);
     DynArr.prepend(0);
     DynArr.append(3); 
-    std::cout << DynArr[0] << " " << DynArr[1] << " " << DynArr[2] << " " << DynArr[3] << std::endl; 
     REQUIRE(DynArr[0] == 0);
     REQUIRE(DynArr[1] == 1);
     REQUIRE(DynArr[2] == 2); 
