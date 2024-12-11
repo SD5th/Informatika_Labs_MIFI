@@ -1,4 +1,4 @@
-#include "../Source/SmartDynamicArray.hpp"
+#include "../Source/DynamicArray.hpp"
 
 #include <catch2/catch_all.hpp>
 

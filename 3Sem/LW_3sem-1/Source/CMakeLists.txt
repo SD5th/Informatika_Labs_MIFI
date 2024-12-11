@@ -4,6 +4,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(SmartPointers
             UnqPtr.hpp 
             ShrdPtr.hpp 
-            SmartDynamicArray.hpp
-            SmartLinkedList.hpp
+            DynamicArray.hpp
+            LinkedList.hpp
             .cpp)

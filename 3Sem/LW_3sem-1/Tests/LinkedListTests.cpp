@@ -1,4 +1,4 @@
-#include "../Source/SmartLinkedList.hpp"
+#include "../Source/LinkedList.hpp"
 
 #include <catch2/catch_all.hpp>
 
