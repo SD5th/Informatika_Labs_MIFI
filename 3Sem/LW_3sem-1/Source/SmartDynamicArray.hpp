@@ -84,7 +84,8 @@ public:
     capacity(size * 2),
     data(UnqPtr<T[]>(new T[capacity]))
   {
-    memcpy(data.get(), items, size * sizeof(T));
+    for (size_t index = 0; index < size; index++)
+      data[index] = items[index];
   }
 
   // Copy-constructor
@@ -94,7 +95,8 @@ public:
     capacity(dynamicArray.capacity),
     data(UnqPtr<T[]>(new T[capacity]))
   {
-    memcpy(data.get(), dynamicArray.data.get(), size * sizeof(T));
+    for (size_t index = 0; index < size; index++)
+      data[index] = dynamicArray[index];
   }
 
   // Move-constructor
@@ -139,34 +141,38 @@ public:
     {
       size = newSize;
       capacity = newSize * 2;
-      T *newPtr = new T[capacity];
-      memcpy(newPtr, data.get(), size * sizeof(T));
-      data = UnqPtr<T[]>(newPtr);
+      UnqPtr<T[]> buffer(new T[capacity]);
+      for (size_t index = 0; index < size; index++)
+        buffer[index] = data[index];      
+      data = std::move(buffer);
     }
   }
 
   // Insert 
   template <class T>
-  void DynamicArray<T>::insert(size_t const & index, T const & item)
+  void DynamicArray<T>::insert(size_t const & ins_index, T const & item)
   {
-    if (index > size)
+    if (ins_index > size)
       throw std::out_of_range("Function 'InsertAt': Index is greater than size.");
     if (size == capacity)
     {
       capacity = (capacity == 0) ? 1 : 2 * capacity;
-      T *ptr = new T[capacity];
-      memcpy(ptr, data.get(), index * sizeof(T));
-      ptr[index] = item;
-      memcpy(ptr + index + 1, data.get() + index, (size - index - 1) * sizeof(T));
-      data = UnqPtr<T[]>(ptr);
+      UnqPtr<T[]> buffer(new T[capacity]);
+      size_t index = 0;
+      for (; index < ins_index; index++)
+        buffer[index] = data[index];      
+      buffer[index] = item;
+      for (; index < size; index++)
+        buffer[index+1] = data[index];
+      data = std::move(buffer);
     }
     else
     {
-      for (size_t i = size; i > index; i--)
-        data[i] = data[i - 1];
-      data[index] = item;
+      for (size_t index = size; index > ins_index; index--)
+        data[index] = data[index - 1];
+      data[ins_index] = item;
     }
-      size++;
+    size++;
   }
 
   // Append 
