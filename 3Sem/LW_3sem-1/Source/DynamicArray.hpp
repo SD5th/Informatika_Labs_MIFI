@@ -21,7 +21,7 @@ public:
   DynamicArray(size_t const &);
 
   // Constructor of array with given objects of given size
-  DynamicArray(T *const &, size_t const &);
+  DynamicArray(T* const &, size_t const &);
 
   // Copy-constructor
   DynamicArray(DynamicArray const &);
@@ -54,10 +54,10 @@ public:
 
 /* Operators */
   // Dereferencing by index
-  T &operator[](size_t);
+  T &operator[](size_t const &);
 
   // Const version of dereferencing by index
-  T const & operator[](size_t) const;
+  T const & operator[](size_t const &) const;
 };
 
 /* Constructors */
@@ -204,7 +204,7 @@ public:
 /* Operators */
   // Dereferencing by index
   template <class T>
-  T &DynamicArray<T>::operator[](size_t index)
+  T &DynamicArray<T>::operator[](size_t const & index)
   {
     if (index >= size)
       throw std::out_of_range("Operator '[]': Index is greater than size.");
@@ -213,7 +213,7 @@ public:
 
   // Const version of dereferencing by index
   template <class T>
-  T const &DynamicArray<T>::operator[](size_t index) const
+  T const &DynamicArray<T>::operator[](size_t const & index) const
   {
     if (index >= size)
       throw std::out_of_range("Const operator '[]': Index is greater than size.");

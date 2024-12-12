@@ -66,10 +66,10 @@ public:
 
 /* Operators */
   // Dereferencing by index
-  T & operator[](size_t);
+  T & operator[](size_t const &);
 
   // Const version of dereferencing by index
-  T const & operator[](size_t) const;
+  T const & operator[](size_t const &) const;
 };
 
 
@@ -181,7 +181,6 @@ public:
   }
 
 /* Destructor */
-
   template <class T>
   LinkedList<T>::~LinkedList()
   {  
@@ -387,7 +386,7 @@ public:
 /* Operators */
   // Dereferencing by index
   template <class T>
-  T & LinkedList<T>::operator[](size_t index)
+  T & LinkedList<T>::operator[](size_t const & index)
   {
     if (head.get() == nullptr)
       throw std::out_of_range("Operator '[]': Index is greater than or equal to size.");
@@ -403,7 +402,7 @@ public:
 
   // Const version of dereferencing by index
   template <class T>
-  T const & LinkedList<T>::operator[](size_t index) const
+  T const & LinkedList<T>::operator[](size_t const & index) const
   {
     if (head.get() == nullptr)
       throw std::out_of_range("Const operator '[]': Index is greater than or equal to size.");
