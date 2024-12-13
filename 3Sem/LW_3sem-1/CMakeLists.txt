@@ -10,7 +10,3 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g")
 
 add_subdirectory(Source)
 add_subdirectory(Tests)
-
-add_executable(Main Main.cpp)
-
-target_link_libraries(Main SmartPointers)
