@@ -4,7 +4,7 @@
 #include <cstdlib> // Для std::rand и std::srand
 #include <ctime>   // Для std::time
 
-#include "../../LW_3sem-1/Source/SmartDynamicArray.hpp"
+#include "../../LW_3sem-1/Source/DynamicArray.hpp"
 
 
 class Person {
@@ -115,6 +115,7 @@ bool Person::operator==(Person const & other) const
     return true;
   return false;
 }
+
 
 bool Person::operator!=(Person const & other) const
 {
@@ -238,7 +239,41 @@ bool Person::operator<(Person const & other) const
   return !operator>=(other);
 }
 
-void fillRandomly(DynamicArray<Person> & array)
+
+
+
+bool compareAge(Person const & p1, Person const & p2)
+{
+  if (p1.age > p2.age)
+    return true;
+  else if (p1.age < p2.age)
+    return false;
+  else
+    return p1 > p2;
+}
+
+bool compareSalary(Person const & p1, Person const & p2)
+{
+  if (p1.salary > p2.salary)
+    return true;
+  else if (p1.salary < p2.salary)
+    return false;
+  else
+    return p1 > p2;
+}
+
+bool compareHeight(Person const & p1, Person const & p2)
+{
+  if (p1.height > p2.height)
+    return true;
+  else if (p1.height < p2.height)
+    return false;
+  else
+    return p1 > p2;
+}
+
+
+void fillArrayRandomly(DynamicArray<Person> & array)
 {
   const std::string maleNames[] = {
       "Bob", "Charlie", "Frank", "Isaac", "Jack",
