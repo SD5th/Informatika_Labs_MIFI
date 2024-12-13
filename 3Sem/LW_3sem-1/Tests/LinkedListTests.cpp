@@ -83,10 +83,14 @@ TEST_CASE("SmartLinkedList: Modifying Operations")
   {
     int arr[2] {1, 2};
     LinkedList<int> List(arr, 2);
-    List.resize(4);
-    REQUIRE(List.getSize() == 4);
+    List.resize(6);
+    REQUIRE(List.getSize() == 6);
     REQUIRE(List[0] == 1);
     REQUIRE(List[1] == 2); 
+    List.resize(0);
+    REQUIRE(List.getSize() == 0);
+    List.resize(2);
+    REQUIRE(List.getSize() == 2);
   }
 
   SECTION("Insert")
@@ -127,6 +131,11 @@ TEST_CASE("SmartLinkedList: Modifying Operations")
     REQUIRE(List1[2] == 3); 
     REQUIRE(List1[3] == 4); 
     REQUIRE(List1.getSize() == 4);
+
+    List1.resize(0);
+    List1.concat(List2);
+    REQUIRE(List1[0] == 3);
+    REQUIRE(List1[1] == 4);
   }
 }
 

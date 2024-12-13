@@ -79,8 +79,8 @@ TEST_CASE("SmartDynamicArray: Modifying Operations")
   {
     int arr[2] {1, 2};
     DynamicArray<int> DynArr(arr, 2);
-    DynArr.resize(4);
-    REQUIRE(DynArr.getSize() == 4);
+    DynArr.resize(6);
+    REQUIRE(DynArr.getSize() == 6);
     REQUIRE(DynArr[0] == 1);
     REQUIRE(DynArr[1] == 2); 
   }
@@ -90,12 +90,14 @@ TEST_CASE("SmartDynamicArray: Modifying Operations")
     int arr[2] {1, 2};
     DynamicArray<int> DynArr(arr, 2);
     DynArr.insert(0, 0);
+    DynArr.insert(3, 4);
     DynArr.insert(3, 3);
     REQUIRE(DynArr[0] == 0);
     REQUIRE(DynArr[1] == 1);
     REQUIRE(DynArr[2] == 2); 
     REQUIRE(DynArr[3] == 3); 
-    REQUIRE(DynArr.getSize() == 4);
+    REQUIRE(DynArr[4] == 4); 
+    REQUIRE(DynArr.getSize() == 5);
   }
 
   SECTION("Append, Prepend")
