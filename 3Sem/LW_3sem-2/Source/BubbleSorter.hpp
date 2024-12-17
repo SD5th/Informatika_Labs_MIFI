@@ -4,25 +4,22 @@
 
 class BubbleSorter : ISorter
 {
+private:
+  void BubbleSort(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &))
+  {
+    for (size_t i = low; i < high; i++)
+      for (size_t j = low; j < high - i; j++)
+        if (compare(array[j], array[j+1]))
+          swap(array, j, j + 1);
+  }
+
 public:
   DynamicArray<Person> Sort(DynamicArray<Person> const & array, bool (*compare) (Person const &, Person const &)) override
   {
     if (array.getSize() == 0)
       return DynamicArray<Person>();
     DynamicArray<Person> answer(array);
-    const size_t size = answer.getSize();
-    for (size_t ind1 = 0; ind1 < size - 1; ind1++)
-    {
-      for (size_t ind2 = 0; ind2 < size - ind1 - 1; ind2++)
-      {
-        if (compare(answer[ind2], answer[ind2+1]))
-        {
-          Person buffer = std::move(answer[ind2]);
-          answer[ind2] = std::move(answer[ind2+1]); 
-          answer[ind2+1] = std::move(buffer); 
-        } 
-      }
-    }
+    BubbleSort(answer, 0, answer.getSize() - 1, compare);
     return answer;
   }
 };

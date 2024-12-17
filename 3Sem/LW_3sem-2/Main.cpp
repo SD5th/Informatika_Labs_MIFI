@@ -2,6 +2,9 @@
 #include <fstream>
 #include "Source/Person.hpp"
 #include "Source/BubbleSorter.hpp"
+#include "Source/QuickSorter.hpp"
+#include "Source/SelectionSorter.hpp"
+#include "Source/ShellSorter.hpp"
 
 using namespace std;
 
