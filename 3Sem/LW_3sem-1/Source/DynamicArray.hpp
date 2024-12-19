@@ -198,7 +198,7 @@ public:
   {
     if (index >= size)
       throw std::out_of_range("Remove: Index is greater than size.");
-    for (size_t i = index; i < size - 1)
+    for (size_t i = index; i < size - 1; i++)
       data[i] = std::move(data[i+1]);
     resize(size-1);
   }
