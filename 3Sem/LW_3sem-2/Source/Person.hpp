@@ -116,7 +116,6 @@ bool Person::operator==(Person const & other) const
   return false;
 }
 
-
 bool Person::operator!=(Person const & other) const
 {
   return !operator==(other);

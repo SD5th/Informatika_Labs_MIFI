@@ -2,7 +2,7 @@
 
 #include "ISorter.hpp"
 
-class SelectionSorter : ISorter
+class SelectionSorter : public ISorter
 {
 private:
   void SelectionSort(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &)) {
@@ -25,5 +25,11 @@ public:
     SelectionSort(answer, 0, answer.getSize() - 1, compare);
     return answer;
   }
+
+  std::string GetType() override
+  {
+    return "Selection";
+  }
+
 };
 

@@ -15,5 +15,6 @@ protected :
 
 public:
   virtual DynamicArray<Person> Sort(DynamicArray<Person> const &, bool (*) (Person const &, Person const &)) = 0;
+  virtual std::string GetType() = 0;
   virtual ~ISorter() {}
 };

@@ -2,7 +2,7 @@
 
 #include "ISorter.hpp"
 
-class BubbleSorter : ISorter
+class BubbleSorter : public ISorter
 {
 private:
   void BubbleSort(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &))
@@ -21,5 +21,10 @@ public:
     DynamicArray<Person> answer(array);
     BubbleSort(answer, 0, answer.getSize() - 1, compare);
     return answer;
+  }
+    
+  std::string GetType() override
+  {
+    return "Bubble";
   }
 };

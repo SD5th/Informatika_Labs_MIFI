@@ -2,7 +2,7 @@
 
 #include "ISorter.hpp"
 
-class ShellSorter : ISorter
+class ShellSorter : public ISorter
 {
 private:
   void ShellSort(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &)) {
@@ -26,6 +26,11 @@ public:
     DynamicArray<Person> answer(array);
     ShellSort(answer, 0, answer.getSize() - 1, compare);
     return answer;
+  }
+
+  std::string GetType() override
+  {
+    return "Shell";
   }
 };
 

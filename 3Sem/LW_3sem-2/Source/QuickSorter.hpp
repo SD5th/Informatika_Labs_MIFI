@@ -2,7 +2,7 @@
 
 #include "ISorter.hpp"
 
-class QuickSorter : ISorter
+class QuickSorter : public ISorter
 {
 private:
   size_t partition(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &)) {
@@ -30,6 +30,7 @@ private:
       QuickSort(array, pi + 1, high, compare);
     }
   }
+
 public:
   DynamicArray<Person> Sort(DynamicArray<Person> const & array, bool (*compare) (Person const &, Person const &)) override
   {
@@ -38,6 +39,11 @@ public:
     DynamicArray<Person> answer(array);
     QuickSort(answer, 0, answer.getSize() - 1, compare);
     return answer;
+  }
+
+  std::string GetType() override
+  {
+    return "Quick";
   }
 };
 
