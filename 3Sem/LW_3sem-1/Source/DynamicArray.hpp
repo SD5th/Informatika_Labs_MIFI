@@ -49,6 +49,9 @@ public:
   // Prepend 
   void prepend(T const &);
 
+  // Remove
+  void remove(size_t const &);
+
   // Concatenation  
   void concat(DynamicArray<T> const &);
 
@@ -187,6 +190,17 @@ public:
   void DynamicArray<T>::prepend(T const & item)
   {
     insert(0, item);
+  }
+
+  // Remove
+  template <class T>
+  void DynamicArray<T>::remove(size_t const & index)
+  {
+    if (index >= size)
+      throw std::out_of_range("Remove: Index is greater than size.");
+    for (size_t i = index; i < size - 1)
+      data[i] = std::move(data[i+1]);
+    resize(size-1);
   }
 
   // Concatenation  
