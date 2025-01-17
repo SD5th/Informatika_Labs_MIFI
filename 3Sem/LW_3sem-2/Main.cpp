@@ -281,7 +281,7 @@ void StartSorting_Function()
     {
       cout << endl;
       start = std::chrono::high_resolution_clock::now();
-      sorters[0]->Sort(unsorted, compare);
+      sorters[sorter_index]->Sort(unsorted, compare);
       end = std::chrono::high_resolution_clock::now();
       duration = end - start;
       cout << sorters[sorter_index]->GetType() << ": " << duration << "\n";

@@ -8,9 +8,19 @@ private:
   void BubbleSort(DynamicArray<Person> & array, size_t const & low, size_t const & high, bool (*compare) (Person const &, Person const &))
   {
     for (size_t i = low; i < high; i++)
+    {
+      bool isSorted = true;
       for (size_t j = low; j < high - i; j++)
+      {
         if (compare(array[j], array[j+1]))
+        {
           swap(array, j, j + 1);
+          isSorted = false;
+        }  
+      }
+      if (isSorted)
+        return;
+    }
   }
 
 public:
