@@ -14,9 +14,6 @@ private:
     Node* right = nullptr;
     int height = 0;
 
-    Node()
-    { }
-
     Node(K const & key):
       key(key)
     { }
@@ -26,6 +23,27 @@ private:
       value(value)
     { }
     
+    static Node* copyTree(Node* nodeToCopy)
+    {
+      if (nodeToCopy == nullptr)
+      {
+        return nullptr;
+      }
+      Node* node = new Node(nodeToCopy->key, nodeToCopy->value);
+      node->left = copyTree(nodeToCopy->left);
+      node->right = copyTree(nodeToCopy->right);
+      return node;
+    }
+
+    static void deleteTree(Node* node) {
+      if (node == nullptr)
+        return;
+      deleteTree(node->left);
+      deleteTree(node->right);
+      delete node;
+      return;
+    }
+
     static int getHeight(Node* node) {
       if (node == nullptr)
         return -1;
@@ -185,9 +203,110 @@ private:
   Node* head = nullptr;
 
 public:
+  class InOrderIterator
+  {
+    friend class Dictionary;
+    private:
+      struct ChainNode
+      {
+        ChainNode* previous;
+        Node* treeNode;
+        bool isLeft;
+        ChainNode(ChainNode* previous, Node* treeNode, bool isLeft):
+          previous(previous),
+          treeNode(treeNode),
+          isLeft(isLeft)
+        { }
+      };
+
+      ChainNode** curr;
+      
+      InOrderIterator(Node* treeNode)
+      {
+        curr = new ChainNode*;
+        (*curr) = new ChainNode(nullptr, treeNode, false);
+        while ((*curr)->treeNode->left != nullptr)
+        {
+          ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
+          (*curr) = buffer;
+        }
+      }
+
+    public:
+      ~InOrderIterator()
+      {
+        while ((*curr)->previous != nullptr)
+        {
+          ChainNode* prev = (*curr)->previous;
+          delete (*curr);
+          (*curr) = prev;
+        }
+        delete *curr;
+        delete curr;
+      }
+
+      V & value() 
+      {
+        return (*curr)->treeNode->value;
+      }
+
+      V const & value() const 
+      {
+        return (*curr)->treeNode->value;
+      }
+
+      //V const & key() const
+      K const & key() const
+      {
+        return (*curr)->treeNode->key;
+      }
+
+      bool hasNext() const
+      {
+        if ((*curr)->isLeft)
+          return true;
+        if ((*curr)->treeNode->right == nullptr)
+          return false;
+        return true;
+      }
+
+      bool next() const
+      {
+        if (!hasNext())
+          return false;
+        if ((*curr)->treeNode->right != nullptr)
+        {
+          ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->right, (*curr)->isLeft);
+          (*curr) = buffer;
+          while ((*curr)->treeNode->left != nullptr)
+          {
+            ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
+            (*curr) = buffer;
+          }
+        }
+        else 
+        {
+          K currKey = (*curr)->treeNode->key;
+          while ((*curr)->treeNode->key <= currKey)
+          {
+            ChainNode* prev = (*curr)->previous;
+            delete (*curr);
+            (*curr) = prev;
+          }
+        }
+        return true;
+      }
+  };
+
 /* Constructors */
   // Constructor of zero-array
   Dictionary();
+
+  // Copy-constructors
+  Dictionary(Dictionary const &);
+
+/* Destructor */
+  ~Dictionary();
 
 /* Getters */
   // Get number of values
@@ -196,9 +315,18 @@ public:
   // Does dictionary contain key
   bool containsKey(K const &) const;
 
+  // Secure way to read value of that key (similar to const [])
+  V const & at(K const &) const;
+
 /* Modifying Operations */
   // Remove by key
   void remove(K const &);
+
+  // Delete all tree
+  void removeAllKeys();
+  
+  // Secure way to change value of that key
+  V & at(K const &);
 
 /* Operators */
   // Dereferencing by key
@@ -206,6 +334,14 @@ public:
 
   // Const version of dereferencing by key
   V const & operator[](K const &) const;
+
+/* Iterators */
+  /* Standart ascending InOrder iterator */
+  InOrderIterator createInOrderIterator();
+
+  /* Standart ascending InOrder iterator without permission to change values */
+  const InOrderIterator createInOrderIterator() const;
+
 };
 
 /* Constructors */
@@ -213,6 +349,20 @@ public:
   template <class K, class V>
   Dictionary<K, V>::Dictionary()
   { }
+
+  // Copy-constructor
+  template <class K, class V>
+  Dictionary<K, V>::Dictionary(Dictionary const & other)
+  {
+    head = Node::copyTree(other.head);
+  }
+
+/* Destructor */
+  template <class K, class V>
+  Dictionary<K, V>::~Dictionary()
+  {
+    removeAllKeys();
+  }
 
 /* Getters */
   // Get size
@@ -222,6 +372,7 @@ public:
     return Node::countNodes(head);
   }
 
+  // Check if dictionary contains a key
   template <class K, class V>
   bool Dictionary<K, V>::containsKey(K const & key) const 
   {
@@ -231,6 +382,20 @@ public:
     return (result != nullptr);
   }
 
+  // Secure way to read value of that key (similar to const [])
+  template<class K, class V> 
+  const V & Dictionary<K, V>::at(const K & key) const
+  {
+    if (head == nullptr)
+      throw std::out_of_range("V & Dictionary<K, V>::at(const K & key): Key isn't in Dictionary.");
+    Node* targetNode = Node::find(head, key);
+    if (targetNode == nullptr)
+      throw std::out_of_range("const V & Dictionary<K, V>::at(const K & key) const: Key isn't in Dictionary.");
+    V const & result = targetNode->value;
+    return result;
+  }
+
+
 /* Modifying Operations */
   // Remove
   template <class K, class V>
@@ -238,6 +403,28 @@ public:
   {
     head = Node::remove(head, key);
   }
+  
+  // Delete all tree
+  template <class K, class V>
+  void Dictionary<K, V>::removeAllKeys()  
+  {
+    Node::deleteTree(head);
+    head = nullptr;
+  }
+
+  // Secure way to change value of that key
+  template<class K, class V> 
+  V & Dictionary<K, V>::at(const K & key)
+  {
+    if (head == nullptr)
+      throw std::out_of_range("V & Dictionary<K, V>::at(const K & key): Key isn't in Dictionary.");
+    Node* targetNode = Node::find(head, key);
+    if (targetNode == nullptr)
+      throw std::out_of_range("V & Dictionary<K, V>::at(const K & key): Key isn't in Dictionary.");
+    V & result = targetNode->value;
+    return result;
+  }
+
 
 /* Operators */
   // Dereferencing by index
@@ -255,10 +442,26 @@ public:
   template <class K, class V>
   V const & Dictionary<K, V>::operator[](K const & key) const
   {
+    if (head == nullptr)
+      throw std::out_of_range("V & Dictionary<K, V>::at(const K & key): Key isn't in Dictionary.");
     Node* targetNode = Node::find(head, key);
     if (targetNode == nullptr)
-      throw std::out_of_range("Dictionary::operator[](const K &key) const: Key isn't in Dictionary.");
+      throw std::out_of_range("V const & Dictionary<K, V>::operator[](K const & key) const: Key isn't in Dictionary.");
     V const & result = targetNode->value;
-    delete targetNode;
     return result;
+  }
+
+/* Iterators */
+  /* Standart ascending InOrder iterator */
+  template <class K, class V> 
+  typename Dictionary<K, V>::InOrderIterator Dictionary<K, V>::createInOrderIterator()
+  {
+    return typename Dictionary<K, V>::InOrderIterator::InOrderIterator(head);
+  }
+
+  /* Standart ascending InOrder iterator without permission to change values */
+  template <class K, class V> 
+  const typename Dictionary<K, V>::InOrderIterator Dictionary<K, V>::createInOrderIterator() const
+  {
+    return typename Dictionary<K, V>::InOrderIterator::InOrderIterator(head);
   }
