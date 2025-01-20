@@ -3,14 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <catch2/catch_all.hpp>
+//#include <catch2/catch_all.hpp>
 
-using namespace std;
-
-TEST_CASE("empty")
-{
-  SECTION("empty")
-  {
-    REQUIRE(true);
-  }
-}
+#include "DictionaryTests.cpp"
