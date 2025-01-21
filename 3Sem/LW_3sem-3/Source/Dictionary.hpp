@@ -127,10 +127,8 @@ private:
 
     static Node* remove(Node* node, K const & key) {
         if (node == nullptr) {
-          return nullptr; // Узел не найден
-        }
-
-        // Рекурсивно ищем узел для удаления
+          return nullptr; 
+        } 
         if (key < node->key) {
           node->left = remove(node->left, key);
         } 
@@ -138,8 +136,6 @@ private:
           node->right = remove(node->right, key);
         } 
         else {
-          // Узел найден
-          // Узел с одним или без детей
           if (node->left == nullptr) {
             Node* buffer = node->right;
             delete node;
@@ -150,11 +146,10 @@ private:
             return buffer;
           }
 
-          // Узел с двумя детьми: получаем минимальный узел из правого поддерева
           Node* buffer = minKeyNode(node->right);
-          node->key = buffer->key; // Копируем значение
-          node->value = buffer->value; // Копируем значение
-          node->right = remove(node->right, buffer->key); // Удаляем минимальный узел
+          node->key = buffer->key; 
+          node->value = buffer->value; 
+          node->right = remove(node->right, buffer->key); 
         }
         updateHeight(node);
         balance(node);
