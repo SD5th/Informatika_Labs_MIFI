@@ -213,107 +213,56 @@ public:
   class InOrderIterator
   {
     friend class Dictionary;
-    private:
-      struct ChainNode
-      {
-        ChainNode* previous;
-        Node* treeNode;
-        bool isLeft;
-        ChainNode(ChainNode* previous, Node* treeNode, bool isLeft):
-          previous(previous),
-          treeNode(treeNode),
-          isLeft(isLeft)
-        { }
-      };
+  private:
+    struct ChainNode
+    {
+      ChainNode* previous;
+      Node* treeNode;
+      bool isLeft;
+      ChainNode(ChainNode* previous, Node* treeNode, bool isLeft):
+        previous(previous),
+        treeNode(treeNode),
+        isLeft(isLeft)
+      { }
+    };
 
-      ChainNode** curr;
+    ChainNode** curr;
+    
+    InOrderIterator(Node* treeNode)
+    {
+      curr = new ChainNode*;
+      if (treeNode == nullptr)
+      {
+        (*curr) = nullptr;
+        return;
+      }
       
-      InOrderIterator(Node* treeNode)
+      (*curr) = new ChainNode(nullptr, treeNode, false);
+      while ((*curr)->treeNode->left != nullptr)
       {
-        curr = new ChainNode*;
-        if (treeNode == nullptr)
-        {
-          (*curr) = nullptr;
-          return;
-        }
-        
-        (*curr) = new ChainNode(nullptr, treeNode, false);
-        while ((*curr)->treeNode->left != nullptr)
-        {
-          ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
-          (*curr) = buffer;
-        }
+        ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
+        (*curr) = buffer;
       }
+    }
 
-    public:
-      ~InOrderIterator()
-      {
-        if ((*curr) == nullptr)
-        {
-          delete curr;
-          return;
-        }
-        while ((*curr)->previous != nullptr)
-        {
-          ChainNode* prev = (*curr)->previous;
-          delete (*curr);
-          (*curr) = prev;
-        }
-        delete *curr;
-        delete curr;
-      }
+  public:
+    // Destructor
+    ~InOrderIterator();
 
-      V & value() 
-      {
-        return (*curr)->treeNode->value;
-      }
+    // Get link to current value
+    V & value();
 
-      V const & value() const 
-      {
-        return (*curr)->treeNode->value;
-      }
+    // Get const link to current value
+    V const & value() const;
+      
+    // Get const link to current key
+    K const & key() const;
 
-      //V const & key() const
-      K const & key() const
-      {
-        return (*curr)->treeNode->key;
-      }
+    // Check if current node is last
+    bool hasNext() const;
 
-      bool hasNext() const
-      {
-        if ((*curr)->isLeft)
-          return true;
-        if ((*curr)->treeNode->right == nullptr)
-          return false;
-        return true;
-      }
-
-      bool next() const
-      {
-        if (!hasNext())
-          return false;
-        if ((*curr)->treeNode->right != nullptr)
-        {
-          ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->right, (*curr)->isLeft);
-          (*curr) = buffer;
-          while ((*curr)->treeNode->left != nullptr)
-          {
-            ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
-            (*curr) = buffer;
-          }
-        }
-        else 
-        {
-          K currKey = (*curr)->treeNode->key;
-          while ((*curr)->treeNode->key <= currKey)
-          {
-            ChainNode* prev = (*curr)->previous;
-            delete (*curr);
-            (*curr) = prev;
-          }
-        }
-        return true;
-      }
+    // Go to the next key
+    bool next() const;   
   };
 
 /* Constructors */
@@ -365,7 +314,6 @@ public:
 
   /* Standart ascending InOrder iterator without permission to change values */
   const InOrderIterator createInOrderIterator() const;
-
 };
 
 /* Constructors */
@@ -503,4 +451,85 @@ public:
   const typename Dictionary<K, V>::InOrderIterator Dictionary<K, V>::createInOrderIterator() const
   {
     return typename Dictionary<K, V>::InOrderIterator::InOrderIterator(head);
+  }
+
+/* InOrder Iterator */
+  // Destructor
+  template<class K, class V> 
+  Dictionary<K, V>::InOrderIterator::~InOrderIterator()
+  {
+    if ((*curr) == nullptr)
+    {
+      delete curr;
+      return;
+    }
+    while ((*curr)->previous != nullptr)
+    {
+      ChainNode* prev = (*curr)->previous;
+      delete (*curr);
+      (*curr) = prev;
+    }
+    delete *curr;
+    delete curr;
+  }
+
+  // Get link to current value
+  template <class K, class V>  
+  V& Dictionary<K, V>::InOrderIterator::value()
+  {
+    return (*curr)->treeNode->value;
+  }
+
+  // Get const link to current value
+  template <class K, class V>  
+  const V &Dictionary<K, V>::InOrderIterator::value() const
+  {
+    return (*curr)->treeNode->value;
+  }
+
+  // Get const link to current key
+  template<class K, class V>  
+  const K &Dictionary<K, V>::InOrderIterator::key() const
+  { 
+    return (*curr)->treeNode->key;
+  }
+
+  // Check if current node is last
+  template<class K, class V>  
+  bool Dictionary<K, V>::InOrderIterator::hasNext() const
+  {
+    if ((*curr)->isLeft)
+      return true;
+    if ((*curr)->treeNode->right == nullptr)
+      return false;
+    return true;
+  }
+
+  // Go to the next key
+  template<class K, class V>  
+  bool Dictionary<K, V>::InOrderIterator::next() const
+  {
+    if (!hasNext())
+      return false;
+    if ((*curr)->treeNode->right != nullptr)
+    {
+      ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->right, (*curr)->isLeft);
+      (*curr) = buffer;
+      while ((*curr)->treeNode->left != nullptr)
+      {
+        ChainNode* buffer = new ChainNode((*curr), (*curr)->treeNode->left, true);
+        (*curr) = buffer;
+      }
+    }
+    else 
+    {
+      K currKey = (*curr)->treeNode->key;
+      while ((*curr)->treeNode->key <= currKey)
+      {
+        ChainNode* prev = (*curr)->previous;
+        delete (*curr);
+        (*curr) = prev;
+      }
+    }
+    return true;
   }

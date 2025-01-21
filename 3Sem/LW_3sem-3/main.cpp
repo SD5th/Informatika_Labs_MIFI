@@ -167,65 +167,61 @@ private:
 
 class MainWindow : public QWidget {
 public:
-    MainWindow(DynamicArray<Worker> const & workers, QWidget *parent = nullptr) : workers(workers), QWidget(parent) {
-        unsigned int minValue = 100; 
-        unsigned int maxValue = 0;
-        for (size_t i = 0; i < workers.getSize(); i++)
-        {
-          if (workers[i].age > maxValue)
-            maxValue = workers[i].age;
-          if (workers[i].age < minValue)
-            minValue = workers[i].age;
-          
-        }
-        QVBoxLayout *layout = new QVBoxLayout(this);
-        QLabel *infoLabel = new QLabel(QString("Range of values: %1-%2\nInput partition points separated by space.\nOr input amount of divisions with one number.").arg(minValue).arg(maxValue), this);
-        layout->addWidget(infoLabel);
-        inputField = new QLineEdit(this);
-        inputField->setPlaceholderText(QString("Input parameters"));
-        layout->addWidget(inputField);
-
-        QPushButton *submitButton = new QPushButton("Build", this);
-        layout->addWidget(submitButton);
-
-        connect(submitButton, &QPushButton::clicked, this, &MainWindow::onSubmit);
-
-        setLayout(layout);
+  MainWindow(DynamicArray<Worker> const & workers, QWidget *parent = nullptr) : workers(workers), QWidget(parent) {
+    unsigned int minValue = 100; 
+    unsigned int maxValue = 0;
+    for (size_t i = 0; i < workers.getSize(); i++)
+    {
+      if (workers[i].age > maxValue)
+        maxValue = workers[i].age;
+      if (workers[i].age < minValue)
+        minValue = workers[i].age;
     }
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    QLabel *infoLabel = new QLabel(QString("Range of values: %1-%2\nInput partition points separated by space.\nOr input amount of divisions with one number.").arg(minValue).arg(maxValue), this);
+    layout->addWidget(infoLabel);
+    inputField = new QLineEdit(this);
+    inputField->setPlaceholderText(QString("Input parameters"));
+    layout->addWidget(inputField);
+
+    QPushButton *submitButton = new QPushButton("Build", this);
+    layout->addWidget(submitButton);
+
+    connect(submitButton, &QPushButton::clicked, this, &MainWindow::onSubmit);
+
+    setLayout(layout);
+  }
 
 private slots:
-    void onSubmit() {
-        QString inputText = inputField->text();
-        QStringList stringList = inputText.split(" ", QString::SkipEmptyParts);
+  void onSubmit() {
+    QString inputText = inputField->text();
+    QStringList stringList = inputText.split(" ", QString::SkipEmptyParts);
 
-        // Преобразование строк в числа
+    Dictionary<Interval<unsigned int>, unsigned int> distribution;
 
-        Dictionary<Interval<unsigned int>, unsigned int> distribution;
-
-        if (stringList.size() == 1)
-          createEqualDistribution(distribution, workers, stringList[0].toUInt());
-        else
-        {
-          DynamicArray<unsigned int> partitions;
-          for (const QString &str : stringList) {
-            bool ok;
-            unsigned int number = str.toUInt(&ok);
-            if (ok) {
-              partitions.append(number);
-            }
-          }
-          createUnEqualDistribution(distribution, workers, partitions);
+    if (stringList.size() == 1)
+      createEqualDistribution(distribution, workers, stringList[0].toUInt());
+    else
+    {
+      DynamicArray<unsigned int> partitions;
+      for (const QString &str : stringList) {
+        bool ok;
+        unsigned int number = str.toUInt(&ok);
+        if (ok) {
+          partitions.append(number);
         }
-
-        // Создание и отображение гистограммы
-        HistogramWidget *histogram = new HistogramWidget(distribution);
-        histogram->setWindowTitle("Histogram");
-        histogram->resize(800, 600);
-        histogram->show();
+      }
+      createUnEqualDistribution(distribution, workers, partitions);
     }
+
+    HistogramWidget *histogram = new HistogramWidget(distribution);
+    histogram->setWindowTitle("Histogram");
+    histogram->resize(800, 600);
+    histogram->show();
+  }
 private:
-    QLineEdit *inputField;
-    DynamicArray<Worker> const & workers;
+  QLineEdit *inputField;
+  DynamicArray<Worker> const & workers;
 };
 
 
@@ -242,5 +238,3 @@ int main(int argc, char *argv[]) {
 
   return a.exec();
 }
-/*
-*/
