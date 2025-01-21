@@ -168,6 +168,13 @@ private:
       return minKeyNode(node->left);
     }
 
+    static Node* maxKeyNode(Node* node)
+    {
+      if (node->right == nullptr)
+        return node;
+      return maxKeyNode(node->right);
+    }
+
     static Node* find(Node* node, K const & key)
     {
       if (key < node->key)
@@ -224,6 +231,12 @@ public:
       InOrderIterator(Node* treeNode)
       {
         curr = new ChainNode*;
+        if (treeNode == nullptr)
+        {
+          (*curr) = nullptr;
+          return;
+        }
+        
         (*curr) = new ChainNode(nullptr, treeNode, false);
         while ((*curr)->treeNode->left != nullptr)
         {
@@ -235,6 +248,11 @@ public:
     public:
       ~InOrderIterator()
       {
+        if ((*curr) == nullptr)
+        {
+          delete curr;
+          return;
+        }
         while ((*curr)->previous != nullptr)
         {
           ChainNode* prev = (*curr)->previous;
@@ -318,6 +336,12 @@ public:
   // Secure way to read value of that key (similar to const [])
   V const & at(K const &) const;
 
+  // Get minimal key
+  K getMinKey() const;
+
+  // Get maximal key
+  K getMaxKey() const;
+
 /* Modifying Operations */
   // Remove by key
   void remove(K const &);
@@ -395,6 +419,21 @@ public:
     return result;
   }
 
+  // Get minimal key
+  template<class K, class V> 
+  K Dictionary<K, V>::getMinKey() const
+  {
+    Node* minNode = Node::minKeyNode(head);
+    return minNode->key;
+  }
+
+  // Get maximal key
+  template<class K, class V> 
+  K Dictionary<K, V>::getMaxKey() const
+  {
+    Node* maxNode = Node::maxKeyNode(head);
+    return maxNode->key;
+  }
 
 /* Modifying Operations */
   // Remove
