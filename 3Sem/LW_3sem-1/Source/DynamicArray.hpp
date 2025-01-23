@@ -146,7 +146,7 @@ public:
       capacity = newSize * 2;
       UnqPtr<T[]> buffer(new T[capacity]);
       for (size_t index = 0; index < size; index++)
-        buffer[index] = data[index];      
+        buffer[index] = std::move(data[index]);      
       data = std::move(buffer);
     }
   }
