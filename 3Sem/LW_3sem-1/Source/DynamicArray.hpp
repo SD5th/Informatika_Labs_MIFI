@@ -163,7 +163,7 @@ public:
       UnqPtr<T[]> buffer(new T[capacity]);
       size_t index = 0;
       for (; index < ins_index; index++)
-        buffer[index] = data[index];      
+        buffer[index] = data[index];
       buffer[index] = item;
       for (; index < size; index++)
         buffer[index+1] = data[index];

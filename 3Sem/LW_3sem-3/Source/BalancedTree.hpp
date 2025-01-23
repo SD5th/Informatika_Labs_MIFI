@@ -57,12 +57,12 @@ private:
     }
 
     static void swap(Node* node1, Node* node2) {
-      K key = std::move(node1->key);
-      V value = std::move(node1->value);
-      node1->key = std::move(node2->key);
-      node1->value = std::move(node2->value);
-      node2->key = std::move(key);
-      node2->value = std::move(value);
+      K key = node1->key;
+      V value = node1->value;
+      node1->key = node2->key;
+      node1->value = node2->value;
+      node2->key = key;
+      node2->value = value;
     }
 
     static void rightRotate (Node* node) {
