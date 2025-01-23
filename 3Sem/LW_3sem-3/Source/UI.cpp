@@ -82,8 +82,8 @@ protected:
 
         unsigned int xshift = 0;
         for (size_t i = 0; i < columns.getSize(); i++){
-          int columnHeight = windowHeight * (columns[i].height / maxHeight);
-          int columnWidth = windowWidth * (columns[i].width() / globalWidth);
+          int columnHeight = (double)windowHeight * ((double)columns[i].height / (double)maxHeight);
+          int columnWidth = (double)windowWidth * ((double)columns[i].width() / (double)globalWidth);
           
           painter.drawRect(xshift, 0.92 * (windowHeight - columnHeight), columnWidth - 1, 0.92 * columnHeight);
           
@@ -168,7 +168,9 @@ private slots:
 
     Histogram* histogram;
 
-    if (stringList.size() == 1)
+    if (stringList.size() == 0)
+      histogram = new Histogram(preparedWorkers, 1);
+    else if (stringList.size() == 1)
       histogram = new Histogram(preparedWorkers, stringList[0].toUInt());
     else
     {
