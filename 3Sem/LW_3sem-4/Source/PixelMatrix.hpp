@@ -3,12 +3,61 @@
 #include "../../LW_3sem-1/Source/DynamicArray.hpp"
 #include "../../LW_3sem-1/Source/UnqPtr.hpp"
 
+struct Pos
+{
+  Pos():
+    x(0), y(0) { }
+
+  Pos(unsigned int const & x, unsigned int const & y):
+    x(x), y(y) { }
+
+  bool operator<(Pos const & other) const
+  {
+    if (x < other.x)
+      return true;
+    else if (x == other.x)
+      return y < other.y;
+    return false;
+  }
+  bool operator==(Pos const & other) const
+  {
+    if (x != other.x)
+      return false;
+    return y == other.y;
+  }
+  bool operator>(Pos const & other) const
+  {
+    if (x > other.x)
+      return true;
+    else if (x == other.x)
+      return y > other.y;
+    return false;
+  }
+  bool operator<=(Pos const & other) const
+  {
+    return !operator>(other);
+  }
+  bool operator!=(Pos const & other) const
+  {
+    return !operator==(other);  
+  }
+  bool operator>=(Pos const & other) const
+  {
+    return !operator<(other);
+  }
+
+  unsigned int x;
+  unsigned int y;
+};
+
 class PixelMatrix
 {
 public:
   PixelMatrix();
 
   PixelMatrix(size_t const & width, size_t const & height);
+
+  PixelMatrix(PixelMatrix const & other);
 
   PixelMatrix(PixelMatrix const & other, size_t const & x1, size_t const & y1, size_t const & x2, size_t const & y2);
 
@@ -42,6 +91,18 @@ PixelMatrix::PixelMatrix(size_t const & width, size_t const & height):
 {
   for (size_t i = 0; i < width; i++)
     data->operator[](i).set(new DynamicArray<bool>(height));
+}
+
+PixelMatrix::PixelMatrix(PixelMatrix const & other):
+  width(other.width),
+  height(other.height),
+  data(UnqPtr<DynamicArray<UnqPtr<DynamicArray<bool>>>>(new DynamicArray<UnqPtr<DynamicArray<bool>>>(width)))
+{
+  for (size_t i = 0; i < width; i++)
+    data->operator[](i).set(new DynamicArray<bool>(height));
+  for (size_t x = 0; x < width; x++)
+    for (size_t y = 0; y < height; y++)
+      pixel(x, y) = other.pixel(x, y); 
 }
 
 PixelMatrix::PixelMatrix(PixelMatrix const & other, size_t const & x1, size_t const & y1, size_t const & x2, size_t const & y2):

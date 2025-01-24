@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Source/PixelMatrix.hpp"
-#include "Source/ImageIntoMatrix.hpp"
+#include "Source/MatrixOperations.hpp"
 
 /*
   int windowWidth = this->width();
@@ -49,8 +49,10 @@ int main(int argc, char *argv[]) {
     } catch (const std::exception &e) {
       qDebug() << e.what();
     }
-
-    unsigned int pixelSize = 5;
+    Graph<Pos, bool> globalGraph;
+    TurnMatrixIntoGraph(matrix, globalGraph);
+    DynamicArray<Graph<Pos, bool>> allSubgraphs(globalGraph.splitIntoIndependentSubgraphs());
+    unsigned int pixelSize = 1;
     PixelWidget widget(matrix, pixelSize);
     widget.setWindowTitle("Pixel Matrix");
     widget.show();

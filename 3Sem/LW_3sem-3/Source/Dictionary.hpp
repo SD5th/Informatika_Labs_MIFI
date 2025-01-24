@@ -13,7 +13,7 @@ public:
   {
     friend class Dictionary;
   private:
-    class BalancedTree<K, V>::InOrderIterator* iterator;
+    typename BalancedTree<K, V>::InOrderIterator* iterator;
 
 
     InOrderIterator(BalancedTree<K,V>* tree):
@@ -32,6 +32,9 @@ public:
       
     // Get const link to current key
     K const & key() const;
+
+    // Check if empty
+    bool isEmpty() const;
 
     // Check if current node is last
     bool hasNext() const;
@@ -228,6 +231,13 @@ public:
   const K &Dictionary<K, V>::InOrderIterator::key() const
   { 
     return iterator->key();
+  }
+
+  // Check is empty
+  template<class K, class V> 
+  bool Dictionary<K, V>::InOrderIterator::isEmpty() const
+  {
+    return iterator->isEmpty();
   }
 
   // Check if current node is last

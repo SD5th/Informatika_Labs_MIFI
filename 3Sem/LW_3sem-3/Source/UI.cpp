@@ -152,9 +152,9 @@ HistogramWidget::Column::Column(Interval const & interval, unsigned int const & 
 { }
 
 HistogramWidget::Column& HistogramWidget::Column::operator=(const Column& other) {
-    if (this != &other) { // Проверка на самоприсваивание
-        height = other.height;
-        interval = other.interval;
+    if (this != &other) { 
+      height = other.height;
+      interval = other.interval;
     }
     return *this;
 }

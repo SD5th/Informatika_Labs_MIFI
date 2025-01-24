@@ -1,6 +1,12 @@
-cd ../build/Tests
-clear
+cd ..
+rm -rf build/
+mkdir build/
+cd build
+cmake ..
 make
+cd Tests
+make
+clear
 ./Tests
 
 cd ../..
