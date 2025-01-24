@@ -86,6 +86,8 @@ public:
   // Const version of dereferencing by key
   V const & operator[](K const &) const;
 
+  Dictionary& operator=(Dictionary const &);
+
 /* Iterators */
   /* Standart ascending InOrder iterator */
   InOrderIterator createInOrderIterator();
@@ -187,6 +189,18 @@ public:
   {
     const BalancedTree<K,V>* temp = static_cast<const BalancedTree<K,V>*>(tree);
     return temp->operator[](key);
+  }
+
+  template<class K, class V> 
+  Dictionary<K, V> & Dictionary<K, V>::operator=(Dictionary<K, V> const & other)
+  {
+    if (tree != nullptr)
+      delete tree;
+    if (this != &other) 
+    {
+      tree = new BalancedTree(*(other.tree));
+    }
+    return *this;
   }
 
 /* Iterators */

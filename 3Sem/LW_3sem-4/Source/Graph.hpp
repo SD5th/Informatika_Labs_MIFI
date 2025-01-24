@@ -51,6 +51,11 @@ private:
       table(*(other.table))
     {  }
 
+    ~AdjacencyTable()
+    {
+      delete table;
+    }
+
     W &operator[](V const & vertex)
     {
       return table->operator[](vertex);
@@ -96,41 +101,28 @@ public:
   void addEdge(V const &, V const &, W const &);
   void removeVertex(V const &);
   void removeEdge(V const &, V const &);
+  size_t countVerticies();
   bool containVertex(V const &);
   W const & getWeight(V const &, V const &) const;
-
   DynamicArray<Graph<V,W>> splitIntoIndependentSubgraphs();
-
+  DynamicArray<V> longestPathInGraphAsArray();
 private:
+  Dictionary<V, AdjacencyTable*>* vertexTables;
 
-  void recursiveTraversal(AdjacencyTable const & adj, Graph<V, W> & subgraph)
-  {
-    typename AdjacencyTable::InOrderIterator it = adj.createIterator();
-    if (!it.isEmpty()){
-      do {
-        V vertex = it.vertex();
-        if (!subgraph.containVertex(vertex))
-        {
-          subgraph.addVertex(vertex);
-          recursiveTraversal(*((*vertexTables)[vertex].get()), subgraph);
-        }
-      } while (it.next());
-    }
-  };
-
-  Dictionary<V, ShrdPtr<AdjacencyTable>>* vertexTables;
+  void splitIntoIndependentSubgraphsUtil(AdjacencyTable*, Graph<V, W> &);
+  Dictionary<V, size_t> longestPathInGraphAsArrayUtil(Dictionary<V, size_t>, V const &, Graph<V, W> const &);
 };
 
 template <class V, class W>
 Graph<V, W>::Graph():
-  vertexTables(new Dictionary<V, ShrdPtr<AdjacencyTable>>)
+  vertexTables(new Dictionary<V, AdjacencyTable*>)
 { }
 
 template <class V, class W>
 void Graph<V, W>::addVertex(V const & vertex)
 {
-  if ((*vertexTables)[vertex].get() == nullptr)
-    (*vertexTables)[vertex] = ShrdPtr(new AdjacencyTable); 
+  if (!vertexTables->containsKey(vertex))
+    (*vertexTables)[vertex] = new AdjacencyTable; 
 }
 
 template <class V, class W>
@@ -143,6 +135,8 @@ void Graph<V, W>::addEdge(V const & vertex1, V const & vertex2, W const & weight
 template <class V, class W>
 void Graph<V, W>::removeVertex(V const & vertex)
 {
+  if (!vertexTables->containsKey(vertex))
+    return;
   typename AdjacencyTable::InOrderIterator it = vertexTables->at(vertex)->createIterator();
   
   if (!it.isEmpty())
@@ -152,6 +146,7 @@ void Graph<V, W>::removeVertex(V const & vertex)
       vertexTables->at(vertexToClear)->remove(vertex);
     } while (it.next());
   }
+  //delete vertexTables->at();
   vertexTables->remove(vertex);
 }
 
@@ -160,6 +155,12 @@ void Graph<V, W>::removeEdge(V const & vertex1, V const & vertex2)
 {
   vertexTables->at(vertex1)->remove(vertex2);
   vertexTables->at(vertex2)->remove(vertex1);
+}
+
+template<class V, class W> 
+size_t Graph<V, W>::countVerticies()
+{
+  return vertexTables->getCount();
 }
 
 template<class V, class W> 
@@ -178,7 +179,7 @@ template<class V, class W>
 DynamicArray<Graph<V, W>> Graph<V, W>::splitIntoIndependentSubgraphs()
 {
   DynamicArray<Graph<V, W>> subgraphs;
-  typename Dictionary<V, ShrdPtr<AdjacencyTable>>::InOrderIterator it = (*vertexTables).createInOrderIterator();
+  typename Dictionary<V, AdjacencyTable*>::InOrderIterator it = vertexTables->createInOrderIterator();
   if (!it.isEmpty())
   {
     do {
@@ -194,8 +195,8 @@ DynamicArray<Graph<V, W>> Graph<V, W>::splitIntoIndependentSubgraphs()
       {
         Graph<V, W> subgraph;
         subgraph.addVertex(vertex);
-        recursiveTraversal(*((*vertexTables)[vertex].get()), subgraph);
-        typename Dictionary<V, ShrdPtr<AdjacencyTable>>::InOrderIterator it2 = (*(subgraph.vertexTables)).createInOrderIterator();
+        splitIntoIndependentSubgraphsUtil((vertexTables->at(vertex)), subgraph);
+        typename Dictionary<V, AdjacencyTable*>::InOrderIterator it2 = subgraph.vertexTables->createInOrderIterator();
         if (!it2.isEmpty())
         {
           do {
@@ -203,9 +204,90 @@ DynamicArray<Graph<V, W>> Graph<V, W>::splitIntoIndependentSubgraphs()
           } while (it2.next());
         }
 
-        subgraphs.append(std::move(subgraph));
+        subgraphs.append(subgraph);
       }
     } while (it.next());
   }
   return subgraphs;
+}
+
+template<class V, class W>  
+void Graph<V, W>::splitIntoIndependentSubgraphsUtil(Graph<V, W>::AdjacencyTable* adj, Graph<V, W> &subgraph)
+{
+  typename AdjacencyTable::InOrderIterator it = adj->createIterator();
+  if (!it.isEmpty()){
+    do {
+      V vertex = it.vertex();
+      if (!subgraph.containVertex(vertex))
+      {
+        subgraph.addVertex(vertex);
+        splitIntoIndependentSubgraphsUtil(vertexTables->at(vertex), subgraph);
+      }
+    } while (it.next());
+  }
+}
+
+template<class V, class W> 
+DynamicArray<V> Graph<V, W>::longestPathInGraphAsArray()
+{
+  DynamicArray<Graph<V, W>> subgraphs(splitIntoIndependentSubgraphs());
+  Dictionary<V, size_t> best; 
+  size_t bestCount = 0;
+  for (size_t i = 0; i < subgraphs.getSize(); i++)
+  {
+    typename Dictionary<V, AdjacencyTable*>::InOrderIterator it = subgraphs[i].vertexTables->createInOrderIterator();
+    if (!it.isEmpty())
+    {
+      do {
+        V startVertex = it.key();
+        Dictionary<V, size_t> candidate = longestPathInGraphAsArrayUtil(Dictionary<V, size_t>(), startVertex, subgraphs[i]);
+        size_t candidateCount = candidate.getCount();
+        if (candidateCount > bestCount)
+        {
+          bestCount = candidateCount;
+          best = candidate;
+        }
+      } while (it.next());
+    }
+  }
+
+  if (bestCount == 0)
+    return DynamicArray<V>();
+  DynamicArray<V> result = DynamicArray<V>(bestCount);
+  typename Dictionary<V, size_t>::InOrderIterator it = best.createInOrderIterator();
+  do {
+    result[it.value()] = it.key();
+  } while (it.next());
+  return result;
+}
+
+template<class V, class W> 
+Dictionary<V, size_t> Graph<V, W>::longestPathInGraphAsArrayUtil(Dictionary<V, size_t> currentPath, V const & lastVertex, Graph<V, W> const & graph)
+{
+  size_t currentCount = currentPath.getCount();
+  currentPath[lastVertex] = currentCount;
+  typename AdjacencyTable::InOrderIterator it = graph.vertexTables->at(lastVertex)->createIterator();
+  Dictionary<V, size_t> bestPath;
+  Dictionary<V, size_t> candidatePath;
+  if (it.isEmpty())
+    return currentPath;
+  else {
+    bestPath = currentPath; 
+    size_t bestCount = currentCount + 1;
+
+    do {
+      V nextVertex = it.vertex();
+      if (!currentPath.containsKey(nextVertex))
+      {
+        candidatePath = longestPathInGraphAsArrayUtil(currentPath, nextVertex, graph);
+        size_t candidateCount = candidatePath.getCount();
+        if (candidateCount > bestCount)
+        {
+          bestCount = candidateCount;
+          bestPath = candidatePath;
+        }
+      }
+    } while (it.next());
+    return bestPath;
+  }
 }

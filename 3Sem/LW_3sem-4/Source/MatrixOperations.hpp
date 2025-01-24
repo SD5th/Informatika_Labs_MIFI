@@ -10,7 +10,7 @@ void ImageIntoMatrix(PixelMatrix & matrix, QString const & imagePath)
 {
   QImage image(imagePath);
   if (image.isNull()) {
-    throw std::runtime_error("Не удалось загрузить изображение");
+    throw std::runtime_error("error with image");
   }
   size_t const width = image.width();
   size_t const height = image.height();
@@ -18,6 +18,7 @@ void ImageIntoMatrix(PixelMatrix & matrix, QString const & imagePath)
 
   double borderColor = 128;
   
+  /*
   for (size_t x = 0; x < width; x++)
     for (size_t y = 0; y < height; y++)
     {
@@ -25,6 +26,7 @@ void ImageIntoMatrix(PixelMatrix & matrix, QString const & imagePath)
       borderColor += (color.red() + color.green() + color.blue()) / 3;
     }
   borderColor /= width * height;
+  */
   
   for (size_t x = 0; x < width; x++)
   {
@@ -36,7 +38,7 @@ void ImageIntoMatrix(PixelMatrix & matrix, QString const & imagePath)
   }
 }
 
-void TurnMatrixIntoGraph(PixelMatrix const & matrix, Graph<Pos, bool> & graph)
+void MatrixIntoGraph(PixelMatrix const & matrix, Graph<Pos, bool> & graph)
 {
   for (size_t x = 0; x < matrix.getWidth(); x++)
     for (size_t y = 0; y < matrix.getHeight(); y++)
@@ -46,6 +48,8 @@ void TurnMatrixIntoGraph(PixelMatrix const & matrix, Graph<Pos, bool> & graph)
   for (size_t x = 1; x < matrix.getWidth() - 1; x++)
     for (size_t y = 1; y < matrix.getHeight() - 1; y++)
     {
+      if (!matrix.pixel(x, y))
+        continue;
       Pos curr(x,y);
       if (matrix.pixel(x-1, y-1))
         graph.addEdge(curr, Pos(x-1, y-1), true);
@@ -60,10 +64,10 @@ void TurnMatrixIntoGraph(PixelMatrix const & matrix, Graph<Pos, bool> & graph)
         graph.addEdge(curr, Pos(x, y+1), true);
       
       if (matrix.pixel(x+1, y-1))
-        graph.addEdge(curr, Pos(x, y-1), true);
+        graph.addEdge(curr, Pos(x+1, y-1), true);
       if (matrix.pixel(x+1, y))
-        graph.addEdge(curr, Pos(x, y), true);
+        graph.addEdge(curr, Pos(x+1, y), true);
       if (matrix.pixel(x+1, y+1))
-        graph.addEdge(curr, Pos(x, y+1), true);
+        graph.addEdge(curr, Pos(x+1, y+1), true);
     }
 }
