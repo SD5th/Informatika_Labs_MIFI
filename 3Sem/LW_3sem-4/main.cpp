@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
       qDebug() << e.what();
     }
     Graph<Pos, bool> globalGraph;
-    TurnMatrixIntoGraph(matrix, globalGraph);
+    MatrixIntoGraph(matrix, globalGraph);
     DynamicArray<Graph<Pos, bool>> allSubgraphs(globalGraph.splitIntoIndependentSubgraphs());
     unsigned int pixelSize = 1;
     PixelWidget widget(matrix, pixelSize);

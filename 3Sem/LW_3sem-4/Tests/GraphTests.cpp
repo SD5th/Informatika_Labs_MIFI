@@ -96,4 +96,29 @@ TEST_CASE("Graph: Operations")
     REQUIRE(!graph3.containVertex(pos6));
     REQUIRE(graph3.containVertex(pos7));
   }
+
+  SECTION("Longest path")
+  {
+    Graph<Pos, bool> graph;
+    Pos pos1 = Pos(1,0);
+    Pos pos2 = Pos(2,0);
+    Pos pos3 = Pos(3,0);
+    Pos pos4 = Pos(4,0);
+    Pos pos5 = Pos(5,0);
+
+    graph.addVertex(pos1);
+    graph.addVertex(pos2);
+    graph.addVertex(pos3);
+    graph.addVertex(pos4);
+    graph.addVertex(pos5);
+
+    graph.addEdge(pos1, pos2, true);
+    graph.addEdge(pos1, pos3, true);
+    graph.addEdge(pos2, pos3, true);
+    graph.addEdge(pos3, pos4, true);
+    graph.addEdge(pos3, pos5, true);
+    graph.addEdge(pos4, pos5, true);
+
+    DynamicArray<Pos> longestPath = graph.longestPathInGraphAsArray();
+  }
 }
