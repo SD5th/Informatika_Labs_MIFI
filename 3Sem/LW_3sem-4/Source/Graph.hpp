@@ -6,6 +6,7 @@ template <class V, class W>
 class Graph
 {
 private:
+/* Class for inner use */
   class AdjacencyTable
   {
   public:
@@ -96,19 +97,30 @@ private:
     Dictionary<V, W>* table;
   };
 public:
+/* Constructor-destructor */
   Graph();
+  ~Graph();
+
+/* Add functions */
   void addVertex(V const &);
   void addEdge(V const &, V const &, W const &);
+  
+/* Remove functions */  
   void removeVertex(V const &);
   void removeEdge(V const &, V const &);
+
+/* Get functions */
   size_t countVerticies();
   bool containVertex(V const &);
   W const & getWeight(V const &, V const &) const;
+
+/* Algorithms */
   DynamicArray<Graph<V,W>> splitIntoIndependentSubgraphs();
   DynamicArray<V> longestPathInGraphAsArray();
 private:
   Dictionary<V, AdjacencyTable*>* vertexTables;
 
+/* Util-functions (for inner use) */
   void splitIntoIndependentSubgraphsUtil(AdjacencyTable*, Graph<V, W> &);
   Dictionary<V, size_t> longestPathInGraphAsArrayUtil(Dictionary<V, size_t>, V const &, Graph<V, W> const &);
 };
@@ -117,6 +129,22 @@ template <class V, class W>
 Graph<V, W>::Graph():
   vertexTables(new Dictionary<V, AdjacencyTable*>)
 { }
+
+template <class V, class W>
+Graph<V, W>::~Graph()
+{
+  /*
+  typename Dictionary<V, AdjacencyTable*>::InOrderIterator it = vertexTables->createInOrderIterator();
+  if (!it.isEmpty())
+  {
+    do
+    {
+      delete it.value();
+    } while (it.next());
+  }
+  delete vertexTables;
+  */
+}
 
 template <class V, class W>
 void Graph<V, W>::addVertex(V const & vertex)
