@@ -9,6 +9,20 @@
 #define MAX_LEN 1024
 #define MAX_ARGS 64
 
+void shell_loop();
+
+void parse_args(char *line, char **args);
+
+void execute_command(char **args);
+
+void execute_pipeline(char **args1, char **args2);
+
+int is_builtin(char* cmd);
+
+void handle_builtin(char **args);
+
+void bgrep(char *pattern); 
+
 void bgrep(char *pattern) {
   char line[MAX_LEN];
     
@@ -89,8 +103,6 @@ void execute_command(char **args) {
     wait(NULL);
   }
 }
-
-
 
 void execute_pipeline(char **args1, char **args2) {
   int pipefd[2];
