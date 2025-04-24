@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include "Source/ProstoShell.h"
+
 
 int main() {
-  printf("Hello, world!\n");
+  shell_loop();
   return 0;
 }
