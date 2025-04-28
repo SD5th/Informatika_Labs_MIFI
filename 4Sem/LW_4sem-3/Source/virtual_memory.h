@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-// === "Класс" виртуальной памяти ===
 typedef struct 
 {
   int*   physical_memory;
@@ -19,7 +18,6 @@ typedef struct
 
 } Virtual_Memory;
 
-// === Интерфейс виртуальной памяти (реализует студент) ===
 Virtual_Memory* vm_construct(size_t physical_memory_size, size_t max_workers, size_t max_virtual_pages_per_worker);
 
 int vm_alloc(Virtual_Memory* vm, size_t worker_id);                 // Выделить виртуальную страницу, вернуть её номер или -1
@@ -199,5 +197,6 @@ void vm_destruct(Virtual_Memory* vm) {
   free(vm->physical_memory);
   free(vm);
 }
+
 
 #endif
