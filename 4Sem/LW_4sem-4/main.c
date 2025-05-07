@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define PORT 81
+#define PORT 82
 #define BUFFER_SIZE 1024
 
 void send_response(int client_fd, const char *status, const char *content_type, const char *body) {
@@ -23,7 +23,16 @@ void send_response(int client_fd, const char *status, const char *content_type, 
   send(client_fd, response, strlen(response), 0);
 }
 
-void send_file(int client_fd, const char* filename) {
+void send_file(int client_fd, const char* requested_path) {
+  char *resolved_path = realpath(requested_path, NULL);  // Нормализация пути
+
+  // Проверка, что файл находится внутри рабочей директории
+  if (!resolved_path || strstr(resolved_path, "/home/user/server/") != resolved_path) {
+      send_response(client_fd, "403 Forbidden", "text/plain", "Access denied\n");
+      free(resolved_path);
+      return;
+  }
+  if (filename)
   FILE* file = fopen(filename, "rb");
   if (!file) {
     send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found");
@@ -88,10 +97,13 @@ int main() {
       if (strncmp(buffer, "GET /", 5) == 0) {
         char *path_start = buffer + 5;
         char *path_end = strchr(path_start, ' ');
-        if (path_end) {
-            *path_end = '\0'; 
-            printf("Requested file: %s\n", path_start);
-            send_file(client_fd, path_start);
+        if (path_end && path_start != path_end) {
+          *path_end = '\0'; 
+          printf("Requested file: '%s'\n", path_start);
+          send_file(client_fd, path_start);
+        }
+        else {
+          send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found");
         }
       } 
       else {

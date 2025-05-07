@@ -5,4 +5,4 @@ cp Source/favicon.ico build/favicon.ico
 cd build
 cmake ..
 make 
-./Main
+./GET-Server
