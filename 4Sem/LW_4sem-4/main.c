@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define PORT 82
+#define PORT 80
 #define BUFFER_SIZE 1024
 
 void send_response(int client_fd, const char *status, const char *content_type, const char *body) {
@@ -24,32 +24,60 @@ void send_response(int client_fd, const char *status, const char *content_type, 
 }
 
 void send_file(int client_fd, const char* requested_path) {
+  printf("Started send_file\n");
+  printf("requested_path: %s\n", requested_path);
   char *resolved_path = realpath(requested_path, NULL);  // Нормализация пути
+  printf("resolved_path: %s\n", resolved_path);
+  if (!resolved_path) {
+    send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
+    return;
+  }
 
   // Проверка, что файл находится внутри рабочей директории
-  if (!resolved_path || strstr(resolved_path, "/home/user/server/") != resolved_path) {
+  const char* base_dir = "/home/whistling_daddy47/MyFolder/shkool_Labs/4Sem/LW_4sem-4/";
+  if (strncmp(resolved_path, base_dir, strlen(base_dir)) != 0) {
       send_response(client_fd, "403 Forbidden", "text/plain", "Access denied\n");
       free(resolved_path);
       return;
   }
-  if (filename)
-  FILE* file = fopen(filename, "rb");
+
+  FILE* file = fopen(resolved_path, "rb");
+  free(resolved_path);
+
   if (!file) {
-    send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found");
+    send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
     return;
   }
 
   fseek(file, 0, SEEK_END);
   long file_size = ftell(file);
+  if (file_size == -1) {
+    fclose(file);
+    send_response(client_fd, "500 Internal Server Error", "text/plain", "File size error");
+    return;
+  }
+
   fseek(file, 0, SEEK_SET);
 
-  char* file_content = malloc(file_size + 1);
-  fread(file_content, 1, file_size, file);
+  char* file_content = malloc(file_size);
+  if (!file_content) {
+      fclose(file);
+      send_response(client_fd, "500 Internal Server Error", "text/plain", "Memory allocation failed");
+      return;
+  }
+  
+  size_t read_bytes = fread(file_content, 1, file_size, file);
+  if (read_bytes != (size_t)file_size) {
+      free(file_content);
+      fclose(file);
+      send_response(client_fd, "500 Internal Server Error", "text/plain", "File read error");
+      return;
+  }
   fclose(file);
 
   // Отправляем HTTP-ответ с файлом
   char response[BUFFER_SIZE];
-  snprintf(response, sizeof(response),
+  int written = snprintf(response, sizeof(response),
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: application/octet-stream\r\n"
       "Content-Length: %ld\r\n"
@@ -57,8 +85,22 @@ void send_file(int client_fd, const char* requested_path) {
       "\r\n",
       file_size
   );
-  send(client_fd, response, strlen(response), 0);
-  send(client_fd, file_content, file_size, 0);
+  
+  if (written < 0 || (size_t)written >= sizeof(response)) {
+      free(file_content);
+      send_response(client_fd, "500 Internal Server Error", "text/plain", "Response generation failed");
+      return;
+  }
+  
+  if (send(client_fd, response, strlen(response), 0) < 0) {
+      free(file_content);
+      return;  // Ошибка отправки
+  }
+  
+  if (send(client_fd, file_content, file_size, 0) < 0) {
+      // Ошибка отправки, но мы уже начали отправлять ответ, так что просто освобождаем память
+  }
+  
   free(file_content);
 }
 
@@ -103,7 +145,7 @@ int main() {
           send_file(client_fd, path_start);
         }
         else {
-          send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found");
+          send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
         }
       } 
       else {
