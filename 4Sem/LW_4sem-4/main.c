@@ -1,7 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #define _GNU_SOURCE
 #include <signal.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +12,6 @@
 #include <ctype.h>
 
 
-#define PORT 80
 #define BUFFER_SIZE 1024
 #define PATH_SIZE 4096
 
@@ -68,7 +66,8 @@ void init_server(int argc, char* argv[]) {
   }
   SERVER_FD = socket(AF_INET, SOCK_STREAM, 0);
   if (SERVER_FD < 0) { 
-    perror("socket"), exit(1);
+    perror("socket"); 
+    exit(EXIT_FAILURE);
   }
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
@@ -78,12 +77,12 @@ void init_server(int argc, char* argv[]) {
   
   if (bind(SERVER_FD, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
     perror("bind"); 
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   
   if (listen(SERVER_FD, 1) < 0) {
     perror("listen"); 
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   printf("Server initializtion ended.\n");
@@ -99,7 +98,7 @@ void init_server_dir() {
   }
   SERVER_DIR[len] = '\0';
 
-  char *last_slash = strrchr(SERVER_DIR, '/');
+  char* last_slash = strrchr(SERVER_DIR, '/');
   if (last_slash == NULL) {
     fprintf(stderr, "Error: Couldn't find a path separator.\n");
     exit(EXIT_FAILURE);
@@ -109,7 +108,7 @@ void init_server_dir() {
   printf("Server directory is: %s\n", SERVER_DIR);
 }
 
-void send_response(int client_fd, const char *status, const char *content_type, const char *body) {
+void send_response(int client_fd, const char* status, const char* content_type, const char* body) {
   char response[BUFFER_SIZE];
   int len = snprintf(response, sizeof(response),
     "HTTP/1.1 %s\r\n"
@@ -120,7 +119,7 @@ void send_response(int client_fd, const char *status, const char *content_type, 
     status, content_type, strlen(body));
   
   if (len < 0 || (size_t)len >= sizeof(response)) {
-    const char *err = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
+    const char*err = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
     send(client_fd, err, strlen(err), 0);
     return;
   }
@@ -131,11 +130,11 @@ void send_response(int client_fd, const char *status, const char *content_type, 
   }
 }
 
-void send_file(int client_fd, const char * requested_path) {
+void send_file(int client_fd, const char* requested_path) {
   printf("Started send_file\n");
   
   printf("requested_path: %s\n", requested_path);
-  char *resolved_path = realpath(requested_path, NULL); 
+  char*resolved_path = realpath(requested_path, NULL); 
   printf("resolved_path: %s\n", resolved_path);
   
   if (!resolved_path) {
@@ -143,8 +142,6 @@ void send_file(int client_fd, const char * requested_path) {
     return;
   }
   
-
-
   if (strncmp(resolved_path, SERVER_DIR, strlen(SERVER_DIR)) != 0) {
     send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
     free(resolved_path);
@@ -239,8 +236,8 @@ int main(int argc, char* argv[]) {
       buffer[n] = '\0';
       printf("\n\nReceived:\n%s\n", buffer);
       if (strncmp(buffer, "GET /", 5) == 0) {
-        char *path_start = buffer + 5;
-        char *path_end = strchr(path_start, ' ');
+        char*path_start = buffer + 5;
+        char*path_end = strchr(path_start, ' ');
         if (path_end && path_start != path_end) {
           *path_end = '\0'; 
           char requested_path[PATH_SIZE];
