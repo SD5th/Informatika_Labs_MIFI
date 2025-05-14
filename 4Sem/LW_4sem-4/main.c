@@ -1,3 +1,7 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
+#include <signal.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,28 +12,39 @@
 #include <fcntl.h>
 #include <ctype.h>
 
+
 #define PORT 80
 #define BUFFER_SIZE 1024
 #define PATH_SIZE 4096
 
 char SERVER_DIR[PATH_SIZE] = {0};
+int SERVER_FD;
 
-int init_server(int argc, char* argv[]) {
+volatile sig_atomic_t KEEP_RUNNING = 1;
+
+void handle_signal(int sig) {
+  printf("\nhandle_signal called\n");
+  KEEP_RUNNING = 0;
+}
+
+void init_server(int argc, char* argv[]) {
+  printf("Server initializtion started\n");
+  
   if (argc < 2) {
     fprintf(stderr, "Error: %s\n", "No port is specified.");
     exit(EXIT_FAILURE);
   }
-
+  
   if (argv[1] == NULL || argv[1][0] == '\0') {
     fprintf(stderr, "Error: %s\n", "Port is empty.");
     exit(EXIT_FAILURE);
   }
-
+  
   if (argv[1][0] == '-' || argv[1][0] == '0') {
     fprintf(stderr, "Error: %s\n", "Port must be a number from 1 to 65535.");
     exit(EXIT_FAILURE);
   }
-
+  
   for (int i = 0; argv[1][i] != '\0'; i++)
   {
     if (i == 5)
@@ -37,7 +52,7 @@ int init_server(int argc, char* argv[]) {
       fprintf(stderr, "Error: %s\n", "Port must be a number from 1 to 65535.");
       exit(EXIT_FAILURE);
     }
-
+    
     if (!isdigit((unsigned char)argv[1][i]))
     {
       fprintf(stderr, "Error: %s\n", "Port must be a number from 1 to 65535.");
@@ -46,13 +61,13 @@ int init_server(int argc, char* argv[]) {
   }
   
   int port = atoi(argv[1]);
-
+  
   if (!(1 <= port && port <= 65535)) {
     fprintf(stderr, "Error: %s\n", "Port must be a number from 1 to 65535.");
     exit(EXIT_FAILURE);
   }
-  int server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (server_fd < 0) { 
+  SERVER_FD = socket(AF_INET, SOCK_STREAM, 0);
+  if (SERVER_FD < 0) { 
     perror("socket"), exit(1);
   }
   struct sockaddr_in addr;
@@ -61,20 +76,22 @@ int init_server(int argc, char* argv[]) {
   addr.sin_addr.s_addr = INADDR_ANY;
   addr.sin_port = htons(port);
   
-  if (bind(server_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+  if (bind(SERVER_FD, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
     perror("bind"); 
     exit(1);
   }
-
-  if (listen(server_fd, 1) < 0) {
+  
+  if (listen(SERVER_FD, 1) < 0) {
     perror("listen"); 
     exit(1);
   }
 
-  return server_fd;
+  printf("Server initializtion ended.\n");
+  printf("Server is working on port %d.\n", port);
 }
 
 void init_server_dir() {
+  printf("Server directory initializtion started\n");
   ssize_t len = readlink("/proc/self/exe", SERVER_DIR, sizeof(SERVER_DIR) - 1);
   if (len == -1) {
     perror("readlink failed");
@@ -88,20 +105,30 @@ void init_server_dir() {
     exit(EXIT_FAILURE);
   }
   *(last_slash + 1) = '\0';
+  printf("Server directory initializtion ended.\n");
+  printf("Server directory is: %s\n", SERVER_DIR);
 }
 
 void send_response(int client_fd, const char *status, const char *content_type, const char *body) {
   char response[BUFFER_SIZE];
-  snprintf(response, sizeof(response),
+  int len = snprintf(response, sizeof(response),
     "HTTP/1.1 %s\r\n"
     "Content-Type: %s\r\n"
     "Content-Length: %zu\r\n"
     "Connection: close\r\n"
-    "\r\n"
-    "%s\r\n",
-    status, content_type, strlen(body), body
-  );
-  send(client_fd, response, strlen(response), 0);
+    "\r\n",
+    status, content_type, strlen(body));
+  
+  if (len < 0 || (size_t)len >= sizeof(response)) {
+    const char *err = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
+    send(client_fd, err, strlen(err), 0);
+    return;
+  }
+  
+  if (send(client_fd, response, len, 0) < 0 || 
+    send(client_fd, body, strlen(body), 0) < 0) {
+    perror("send failed");
+  }
 }
 
 void send_file(int client_fd, const char * requested_path) {
@@ -158,7 +185,6 @@ void send_file(int client_fd, const char * requested_path) {
   }
   fclose(file);
 
-  // Отправляем HTTP-ответ с файлом
   char response[BUFFER_SIZE];
   int written = snprintf(response, sizeof(response),
     "HTTP/1.1 200 OK\r\n"
@@ -185,15 +211,25 @@ void send_file(int client_fd, const char * requested_path) {
 }
 
 int main(int argc, char* argv[]) {
+  struct sigaction sa;
+  sa.sa_handler = handle_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
+  sigaction(SIGTERM, &sa, NULL);
 
-  int server_fd = init_server(argc, argv);
+
+  init_server(argc, argv);
   init_server_dir();
   
   char buffer[BUFFER_SIZE];
 
-  while (1 == 1) {  
-    int client_fd = accept(server_fd, NULL, NULL);
+  while (KEEP_RUNNING == 1) {  
+    int client_fd = accept(SERVER_FD, NULL, NULL);
     if (client_fd < 0) {
+      if (KEEP_RUNNING != 1) {
+        break;
+      }
       perror("accept");
       continue;
     }
@@ -224,6 +260,6 @@ int main(int argc, char* argv[]) {
     }
     close(client_fd);
   }
-  close(server_fd);
+  close(SERVER_FD);
   return 0;
 }
