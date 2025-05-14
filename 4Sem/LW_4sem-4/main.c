@@ -26,19 +26,19 @@ void send_response(int client_fd, const char *status, const char *content_type, 
 void send_file(int client_fd, const char* requested_path) {
   printf("Started send_file\n");
   printf("requested_path: %s\n", requested_path);
-  char *resolved_path = realpath(requested_path, NULL);  // Нормализация пути
+  char *resolved_path = realpath(requested_path, NULL); 
   printf("resolved_path: %s\n", resolved_path);
+  
   if (!resolved_path) {
     send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
     return;
   }
 
-  // Проверка, что файл находится внутри рабочей директории
   const char* base_dir = "/home/whistling_daddy47/MyFolder/shkool_Labs/4Sem/LW_4sem-4/";
   if (strncmp(resolved_path, base_dir, strlen(base_dir)) != 0) {
-      send_response(client_fd, "403 Forbidden", "text/plain", "Access denied\n");
-      free(resolved_path);
-      return;
+    send_response(client_fd, "404 Not Found", "text/plain", "404 Not Found\n");
+    free(resolved_path);
+    return;
   }
 
   FILE* file = fopen(resolved_path, "rb");
@@ -93,14 +93,11 @@ void send_file(int client_fd, const char* requested_path) {
   }
   
   if (send(client_fd, response, strlen(response), 0) < 0) {
-      free(file_content);
-      return;  // Ошибка отправки
+    free(file_content);
+    return;  // Ошибка отправки
   }
-  
-  if (send(client_fd, file_content, file_size, 0) < 0) {
-      // Ошибка отправки, но мы уже начали отправлять ответ, так что просто освобождаем память
-  }
-  
+  send(client_fd, file_content, file_size, 0);
+    
   free(file_content);
 }
 
@@ -151,9 +148,7 @@ int main() {
       else {
         send_response(client_fd, "400 Bad Request", "text/plain", "Only GET method is supported\n");
       }
-      //send_response(client_fd, "200 OK", "text/plain", "Hello from server!");
     }
-
     close(client_fd);
   }
   close(server_fd);
