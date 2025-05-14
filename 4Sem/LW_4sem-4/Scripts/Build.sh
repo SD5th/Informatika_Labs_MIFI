@@ -5,4 +5,5 @@ cp Source/favicon.ico build/favicon.ico
 cd build
 cmake ..
 make 
-./GET-Server
+rm ../HTTP-Server
+cp Main ../HTTP-Server
