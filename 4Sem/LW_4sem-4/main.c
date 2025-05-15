@@ -119,7 +119,7 @@ void send_response(int client_fd, const char* status, const char* content_type, 
     status, content_type, strlen(body));
   
   if (len < 0 || (size_t)len >= sizeof(response)) {
-    const char*err = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
+    const char* err = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
     send(client_fd, err, strlen(err), 0);
     return;
   }
@@ -134,7 +134,7 @@ void send_file(int client_fd, const char* requested_path) {
   printf("Started send_file\n");
   
   printf("requested_path: %s\n", requested_path);
-  char*resolved_path = realpath(requested_path, NULL); 
+  char* resolved_path = realpath(requested_path, NULL); 
   printf("resolved_path: %s\n", resolved_path);
   
   if (!resolved_path) {
@@ -158,7 +158,7 @@ void send_file(int client_fd, const char* requested_path) {
 
   fseek(file, 0, SEEK_END);
   long file_size = ftell(file);
-  if (file_size == -1) {
+  if (file_size < 0) {
     fclose(file);
     send_response(client_fd, "500 Internal Server Error", "text/plain", "File size error");
     return;
@@ -236,8 +236,8 @@ int main(int argc, char* argv[]) {
       buffer[n] = '\0';
       printf("\n\nReceived:\n%s\n", buffer);
       if (strncmp(buffer, "GET /", 5) == 0) {
-        char*path_start = buffer + 5;
-        char*path_end = strchr(path_start, ' ');
+        char* path_start = buffer + 5;
+        char* path_end = strchr(path_start, ' ');
         if (path_end && path_start != path_end) {
           *path_end = '\0'; 
           char requested_path[PATH_SIZE];
